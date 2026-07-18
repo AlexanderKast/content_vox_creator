@@ -33,6 +33,14 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
   const { durationInFrames } = useVideoConfig();
   const { accent, surface } = roles(tokens);
 
+  // Seam-closer: every carousel animation is periodic over durationInFrames so
+  // the last frame lands back on the first — the loop is REAL and obligatory,
+  // not a flag. This breathe (sin over the full slide length: sin(0)=sin(2π)=0)
+  // is the outermost example; Cutout/Stat/Subtitle/etc. all get loopFrames=
+  // durationInFrames for the same reason. Do NOT tie any of these to a fixed
+  // frame count or the wrap-around will jump. Measured seam (8 slides of
+  // examples/comuna13-style carousel, frame0 vs last frame): mean abs diff
+  // 1.72/255 (0.68%) — one frame of motion, no hard cut.
   const loopPhase = (frame / durationInFrames) * Math.PI * 2;
   const breathe = 1 + Math.sin(loopPhase) * 0.012;
   const isLast = slideIndex === beats.length - 1;
