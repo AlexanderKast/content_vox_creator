@@ -1,0 +1,111 @@
+{
+  "mode": "video",
+  "brand": "alexander",
+  "topic": "Cómo automatizar tu primer proceso con IA sin saber programar",
+  "hook": "Tus resultados no crecen aunque trabajes mas duro, si sigues haciendo todo a mano.",
+  "cta": "Sigue la cuenta, comparte esto con quien lo necesita, y comenta QUE VENDES para el link de la guia.",
+  "formula": "F1",
+  "music_prompt": "understated documentary underscore, tense, minimal percussion",
+  "gating": {
+    "gating_question": "comenta QUE VENDES",
+    "lead_magnet_path": "assets/lead-magnets/guia-automatizacion.md",
+    "botcake_flow": {
+      "trigger": "QUE VENDES",
+      "tags": ["lead-automatizacion", "warm-negocios-digitales"],
+      "dm2_at_hours": 24
+    }
+  },
+  "beats": [
+    {
+      "index": 1,
+      "text": "EMPEZAMOS",
+      "narration": "",
+      "seconds": 4,
+      "assets": [{ "id": "clock", "description": "clock hands spinning fast over a messy desk, cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "LA CALLE ENSEÑA OTRA COSA",
+      "narration": "En Bogota, un vendedor informal gana 40 mil pesos con suerte en un dia entero de trabajo manual.",
+      "seconds": 6,
+      "assets": [{ "id": "street", "description": "street vendor cart in a busy Bogota avenue, editorial cutout" }]
+    },
+    {
+      "index": 3,
+      "text": "1. AUTOMATIZA LO REPETITIVO",
+      "narration": "Lo primero es automatizar lo repetitivo.",
+      "seconds": 5,
+      "assets": [{ "id": "loop", "description": "circular arrow loop icon, cutout" }]
+    },
+    {
+      "index": 4,
+      "text": "2. COBRA POR RESULTADOS",
+      "narration": "Lo segundo es cobrar por resultados, no por horas.",
+      "seconds": 5,
+      "assets": [{ "id": "invoice", "description": "invoice with a dollar sign, cutout" }]
+    },
+    {
+      "index": 5,
+      "text": "3. DOCUMENTA TODO",
+      "narration": "Lo tercero es documentar cada proceso que automatizas.",
+      "seconds": 5,
+      "assets": [{ "id": "doc", "description": "checklist clipboard, cutout" }]
+    },
+    {
+      "index": 6,
+      "text": "4. MIDE EL SEGUIMIENTO",
+      "narration": "Y lo cuarto, medir el seguimiento cada semana.",
+      "seconds": 5,
+      "assets": [{ "id": "chart", "description": "rising bar chart, cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "ASI LO HICIMOS EN KREOON",
+      "narration": "Con KREOON ya generamos mas de cien piezas en un mes para clientes reales usando este mismo sistema.",
+      "seconds": 6,
+      "assets": [{ "id": "kreoon", "description": "laptop dashboard with content pieces, editorial cutout" }]
+    },
+    {
+      "index": 8,
+      "text": "PERO ALEXANDER...",
+      "narration": "Pero Alexander, ¿y si no se nada de codigo? Tranquilo, no necesitas saber programar para automatizar esto.",
+      "seconds": 8,
+      "assets": [{ "id": "question", "description": "question mark hand-drawn, cutout" }]
+    },
+    {
+      "index": 9,
+      "text": "EL 63% YA LO ESTA HACIENDO",
+      "narration": "El 63% de quienes automatizan su primer proceso ganan mas en tres meses.",
+      "seconds": 6,
+      "assets": [{ "id": "growth", "description": "upward growth arrow over coins, cutout" }]
+    },
+    {
+      "index": 10,
+      "text": "NO ES MAGIA, ES SISTEMA",
+      "narration": "No es magia, es sistema — y el sistema se puede copiar.",
+      "seconds": 6,
+      "assets": [{ "id": "gears", "description": "interlocking gears, cutout" }]
+    },
+    {
+      "index": 11,
+      "text": "TU DECIDES COMO ESCALAR",
+      "narration": "Tu decides como escalar esto en tu propio negocio.",
+      "seconds": 6,
+      "assets": [{ "id": "compass", "description": "compass needle held by a human hand, cutout" }]
+    },
+    {
+      "index": 12,
+      "text": "SIGUE PARA LA PARTE 2",
+      "narration": "Sigue la cuenta para la parte dos de esta serie.",
+      "seconds": 6,
+      "assets": [{ "id": "arrow", "description": "arrow pointing forward, cutout" }]
+    },
+    {
+      "index": 13,
+      "text": "COMENTA QUE VENDES",
+      "narration": "Comenta que vendes y te mando la guia completa.",
+      "seconds": 8,
+      "assets": [{ "id": "comment", "description": "speech bubble with a plus sign, cutout" }]
+    }
+  ]
+}

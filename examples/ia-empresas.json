@@ -1,0 +1,66 @@
+{
+  "mode": "video",
+  "brand": "alexander",
+  "topic": "La importancia de la IA en las empresas",
+  "hook": "Tu competencia ya esta usando IA. Tu sigues debatiendo si vale la pena.",
+  "cta": "Tu empresa ya usa IA o sigue esperando? Dilo en los comentarios y sigue la cuenta.",
+  "music_prompt": "corporate documentary underscore, driving pulse, confident",
+  "beats": [
+    {
+      "index": 1,
+      "text": "NO ES EL FUTURO, ES HOY",
+      "narration": "No es el futuro. Es hoy. Y la mayoria de empresas sigue actuando como si tuviera tiempo de sobra.",
+      "seconds": 7,
+      "assets": [{ "id": "handshake", "description": "robotic hand and human hand shaking, editorial cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "LAS QUE TARDAN, PIERDEN TERRENO",
+      "narration": "Las empresas que tardan en adoptarla no pierden una ventaja. Pierden terreno que ya no se recupera.",
+      "seconds": 6,
+      "assets": [{ "id": "hourglass", "description": "hourglass with a downward arrow made of sand, cutout" }]
+    },
+    {
+      "index": 3,
+      "text": "AUTOMATIZA LO REPETITIVO",
+      "narration": "La IA no reemplaza el criterio del equipo. Automatiza lo repetitivo para que el equipo piense.",
+      "seconds": 6,
+      "assets": [{ "id": "gears", "description": "mechanical gears turning inside a clock face, cutout" }]
+    },
+    {
+      "index": 4,
+      "text": "LIBERA TIEMPO PARA DECIDIR",
+      "narration": "Libera horas que hoy se van en tareas que ninguna persona deberia estar haciendo a mano.",
+      "seconds": 6,
+      "assets": [{ "id": "brain", "description": "brain with a glowing lightbulb inside, minimal illustration" }]
+    },
+    {
+      "index": 5,
+      "text": "NO REEMPLAZA, POTENCIA",
+      "narration": "No reemplaza al que decide. Potencia la decision con datos que antes tardaban semanas.",
+      "seconds": 6,
+      "assets": [{ "id": "magnifier", "description": "magnifying glass over a rising bar chart, cutout" }]
+    },
+    {
+      "index": 6,
+      "text": "LOS DATOS SON EL NUEVO PETROLEO",
+      "narration": "Los datos que ya tienes valen mas de lo que crees. La IA es lo que los convierte en decisiones.",
+      "seconds": 6,
+      "assets": [{ "id": "barrel", "description": "oil barrel transforming into streams of binary code, cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "EMPEZAR MAL ES PEOR QUE NO EMPEZAR",
+      "narration": "Empezar mal, sin estrategia, sale mas caro que no haber empezado. Por eso el orden importa.",
+      "seconds": 7,
+      "assets": [{ "id": "puzzle", "description": "broken puzzle piece falling apart mid-air, cutout" }]
+    },
+    {
+      "index": 8,
+      "text": "LA VENTAJA ES DE QUIEN EMPIEZA HOY",
+      "narration": "La ventaja no es de quien tiene mas presupuesto. Es de quien empieza hoy, bien.",
+      "seconds": 7,
+      "assets": [{ "id": "breakthrough", "description": "arrow breaking through a brick wall, editorial cutout" }]
+    }
+  ]
+}

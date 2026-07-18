@@ -1,0 +1,88 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "topic": "Que es MCP y por que cambia tu negocio con IA",
+  "hook": "Tu IA es un genio encerrado en una caja.",
+  "cta": "Comenta MCP y te paso la guia. Cual conectarias primero? Sigueme para la parte 2.",
+  "music_prompt": "elegant minimal tech underscore, soft pulsing synth, subtle beat, modern, no vocals",
+  "series_kicker": "100% CON IA",
+  "beats": [
+    {
+      "index": 1,
+      "aida": "atencion",
+      "kicker": "ULTIMA HORA",
+      "text": "UN GENIO ENCERRADO",
+      "subtitle": "Tu IA no toca nada tuyo",
+      "scene": "a glowing AI brain trapped inside a sealed glass display box on a museum pedestal, dramatic spotlight",
+      "seconds": 8
+    },
+    {
+      "index": 2,
+      "aida": "interes",
+      "kicker": "EL PROBLEMA",
+      "text": "SABE TODO",
+      "subtitle": "Pero no ejecuta nada",
+      "badge": "0 ACCESO",
+      "scene": "a robot behind iron prison bars reaching toward a calendar, a sales chart and a database it cannot touch",
+      "seconds": 8
+    },
+    {
+      "index": 3,
+      "aida": "interes",
+      "kicker": "EL COSTO",
+      "text": "TU HACES TODO",
+      "subtitle": "Copiar, pegar, repetir",
+      "badge": "A MANO",
+      "scene": "an exhausted entrepreneur at a cluttered desk at night copy-pasting between many glowing screens",
+      "seconds": 8
+    },
+    {
+      "index": 4,
+      "aida": "deseo",
+      "kicker": "LA SOLUCION",
+      "text": "MCP ROMPE LA CAJA",
+      "subtitle": "Conecta tu IA a tu mundo",
+      "badge": "NUEVO",
+      "scene": "a glowing AI brain violently shattering out of a glass box, shards and energy bursting outward",
+      "seconds": 8
+    },
+    {
+      "index": 5,
+      "aida": "deseo",
+      "kicker": "COMO FUNCIONA",
+      "text": "UN ESTANDAR",
+      "subtitle": "Cero codigo por cada app",
+      "scene": "a central glowing hub with one universal cable connecting to dozens of app icons arranged around it",
+      "seconds": 8
+    },
+    {
+      "index": 6,
+      "aida": "deseo",
+      "kicker": "EL RESULTADO",
+      "text": "TRABAJA SOLA 24/7",
+      "subtitle": "Agenda, responde, reporta",
+      "scene": "a friendly retro robot at an office desk with many arms autonomously handling a calendar, envelopes and paper reports, no signs",
+      "seconds": 8
+    },
+    {
+      "index": 7,
+      "aida": "accion",
+      "kicker": "EN SIMPLE",
+      "text": "EL USB DE LA IA",
+      "subtitle": "Enchufas y funciona",
+      "scene": "a giant USB connector plugging into a glowing brain-shaped port, retro tech poster style",
+      "seconds": 8
+    },
+    {
+      "index": 8,
+      "aida": "accion",
+      "kicker": "TU TURNO",
+      "text": "COMENTA LA PALABRA",
+      "subtitle": "Y te mando la guia gratis",
+      "badge": "GRATIS",
+      "search": "MCP",
+      "scene": "a warm cozy desk scene with a large glowing comment speech bubble and a phone inviting engagement",
+      "seconds": 9
+    }
+  ]
+}

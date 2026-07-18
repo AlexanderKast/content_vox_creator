@@ -1,0 +1,66 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "topic": "Errores al automatizar contenido con IA",
+  "hook": "El 90% esta usando IA para producir mas basura, mas rapido.",
+  "cta": "Cual de los 6 te pego? Dilo en comentarios y sigue para la parte 2.",
+  "music_prompt": "minimal tense underscore, steady pulse, no drums",
+  "beats": [
+    {
+      "index": 1,
+      "text": "MAS BASURA, MAS RAPIDO",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "trash", "description": "conveyor belt dumping identical grey boxes, editorial cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "LO QUE TE CUESTA NO SABERLO",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "cost", "description": "hourglass with coins falling out the bottom" }]
+    },
+    {
+      "index": 3,
+      "text": "1. PEDIRLE IDEAS, NO EJECUCION",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "ideas", "description": "lightbulb with no wires connected to anything" }]
+    },
+    {
+      "index": 4,
+      "text": "2. UN PROMPT PARA TODO",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "swiss", "description": "swiss army knife with every blade bent, cutout" }]
+    },
+    {
+      "index": 5,
+      "text": "3. NO MEDIR LO QUE CUESTA",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "meter", "description": "electricity meter spinning wildly, close up" }]
+    },
+    {
+      "index": 6,
+      "text": "4. COPIAR EL SISTEMA DE OTRO",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "copy", "description": "photocopy of a photocopy, degraded, cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "LA IA NO TIENE CRITERIO. TU SI.",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "compass", "description": "compass needle held by a human hand" }]
+    },
+    {
+      "index": 8,
+      "text": "CUAL TE PEGO?",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "mirror", "description": "cracked mirror reflecting a question mark" }]
+    }
+  ]
+}

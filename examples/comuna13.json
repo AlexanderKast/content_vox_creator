@@ -1,0 +1,66 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "topic": "Comuna 13: el metodo detras de la transformacion",
+  "hook": "La Comuna 13 era el barrio mas peligroso del mundo. Hoy cobra en dolares.",
+  "cta": "Que historia estan contando de tu negocio? Comenta QUE VENDES y te digo como darle la vuelta.",
+  "music_prompt": "hopeful documentary underscore, subtle latin percussion, restrained, no vocals",
+  "beats": [
+    {
+      "index": 1,
+      "text": "EL BARRIO MAS PELIGROSO DEL MUNDO. HOY COBRA EN DOLARES.",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "hillside", "description": "dense hillside neighborhood of brick houses stacked up a steep mountain, dramatic light, editorial documentary cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "NO FUE UN MILAGRO. FUE UN METODO.",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "blueprint", "description": "architectural blueprint rolled open over a wooden table, editorial cutout" }]
+    },
+    {
+      "index": 3,
+      "text": "1. CONSTRUYERON EL ACCESO ANTES QUE EL PRODUCTO",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "escalator", "description": "outdoor orange escalator climbing a steep hillside between brick houses, bold outlines, cutout" }]
+    },
+    {
+      "index": 4,
+      "text": "2. CONTARON SU PROPIA HISTORIA",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "spray", "description": "hand holding a spray paint can mid stroke against a colorful mural wall, high contrast cutout" }]
+    },
+    {
+      "index": 5,
+      "text": "3. LA PLATA SE QUEDO EN EL BARRIO",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "guide", "description": "local tour guide speaking to a small group seen from behind, editorial cutout" }]
+    },
+    {
+      "index": 6,
+      "text": "4. NO PIDIERON PERMISO",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "door", "description": "closed institutional door with a hand-painted open sign hung over it, cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "NO CAMBIARON EL BARRIO. CAMBIARON EL RELATO.",
+      "narration": "",
+      "seconds": 6,
+      "assets": [{ "id": "megaphone", "description": "vintage megaphone painted with bright mural colors, bold outlines, cutout" }]
+    },
+    {
+      "index": 8,
+      "text": "QUE HISTORIA CUENTAN DE TU NEGOCIO?",
+      "narration": "",
+      "seconds": 5,
+      "assets": [{ "id": "mirror", "description": "cracked mirror reflecting a question mark, editorial cutout" }]
+    }
+  ]
+}

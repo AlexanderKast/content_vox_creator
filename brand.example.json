@@ -1,0 +1,23 @@
+{
+  "demo": {
+    "handle": "@tumarca",
+    "displayFont": "Archivo",
+    "quoteFont": "Playfair Display",
+    "colors": {
+      "black": "#050505",
+      "gold": "#D4AF37",
+      "paper": "#2e2318",
+      "white": "#F5F1E8"
+    },
+    "dominant": "gold",
+    "aesthetic": "warm bronze, high contrast, oversized type",
+    "grain": 0.12,
+    "voiceId": "PEGA_AQUI_TU_VOICE_ID_DE_ELEVENLABS",
+    "characterRef": null,
+    "founderName": "Tu Nombre",
+    "credentials": ["ej. 5 años en tu industria"],
+    "proof": ["ej. Tu Empresa", "ej. Un Cliente Real"],
+    "hashtags": ["#tumarca", "#tunicho"],
+    "signature": "Nos vemos en el proximo. — @tumarca"
+  }
+}

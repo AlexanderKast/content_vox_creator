@@ -1,0 +1,22 @@
+# Secrets and personal branding — NEVER share these. Templates ship instead:
+# .env.example and brand.example.json.
+.env
+brand.json
+
+# Personal skill doc (tu @, credenciales, marcas, IDs de Metricool). No viaja.
+SKILL.md
+
+# Generated / local
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+out/
+.cache/
+factory.db
+assets/generated/
+assets/lead-magnets/
+remotion/public/generated/
+
+# Session / harness artifacts (not project source)
+.claude/
