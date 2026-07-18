@@ -48,5 +48,10 @@ class ApifyPhotos:
 
     @staticmethod
     def download(url: str) -> bytes:
-        with urllib.request.urlopen(url, timeout=60) as response:
+        # Some hosts 403 a request with no/default User-Agent (basic
+        # anti-hotlinking) — a real, if minimal, browser UA is enough to pass.
+        request = urllib.request.Request(
+            url, headers={"User-Agent": "Mozilla/5.0 (compatible; fabrica-box/1.0)"}
+        )
+        with urllib.request.urlopen(request, timeout=60) as response:
             return response.read()

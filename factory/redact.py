@@ -39,6 +39,33 @@ def _cascades() -> tuple[cv2.CascadeClassifier, cv2.CascadeClassifier]:
     return _face_cascade, _eye_cascade
 
 
+def has_face(image_bytes: bytes) -> bool:
+    """True if at least one face is detected. Used as a sanity gate for
+    is_public_figure assets: Apify's search can return a wrong or non-photo
+    result (a screenshot of an unrelated page, an infographic, ...) for an
+    otherwise normal query — verified 2026-07-18, a "president speaking
+    press conference" search returned a chat-UI screenshot with unrelated
+    text, and the eye cascade false-positived on that text. A minSize tied to
+    the image's own dimensions (not a fixed pixel count) keeps the bar
+    consistent across Apify's wildly varying result resolutions, and a higher
+    minNeighbors than black_bar_eyes trades a few missed real faces (odd
+    angles, low light) for fewer false positives on non-photo content — the
+    right side to err on for a discard gate, the opposite of the redaction
+    itself (which must never under-cover)."""
+    array = np.frombuffer(image_bytes, dtype=np.uint8)
+    image = cv2.imdecode(array, cv2.IMREAD_COLOR)
+    if image is None:
+        return False
+    height, width = image.shape[:2]
+    min_dim = round(min(height, width) * 0.08)
+    face_cascade, _ = _cascades()
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(
+        gray, scaleFactor=1.1, minNeighbors=8, minSize=(min_dim, min_dim)
+    )
+    return len(faces) > 0
+
+
 def black_bar_eyes(image_bytes: bytes) -> bytes:
     """Return `image_bytes` (any format OpenCV can decode) re-encoded as PNG
     with the eyes (or, failing detection, the upper band) blacked out."""

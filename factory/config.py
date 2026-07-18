@@ -61,7 +61,7 @@ def load() -> Config:
         magnific_key=os.environ.get("MAGNIFIC_API_KEY") or None,
         apify_token=os.environ.get("APIFY_API_TOKEN") or None,
         apify_image_actor=os.environ.get(
-            "APIFY_IMAGE_ACTOR", "automation-lab~google-images-scraper"
+            "APIFY_IMAGE_ACTOR", "hooli~google-images-scraper"
         ),
         elevenlabs_key=os.environ.get("ELEVENLABS_API_KEY") or None,
         max_spend_per_run=float(os.environ.get("MAX_SPEND_PER_RUN_USD", "1.50")),

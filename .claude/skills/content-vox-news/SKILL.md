@@ -102,12 +102,12 @@ estas diferencias:
     sin costo) y Remotion ya la ubica en el placement más chico/alejado
     (`DISTANT_PLACEMENT` en `design.ts`) — no hace falta pedir nada de eso en
     el prompt, es automático una vez que las dos banderas están puestas.
-  - **Apify (`Tier.PHOTO`) puede devolver 0 resultados hoy** — bug conocido
-    en el scraper configurado (`automation-lab~google-images-scraper`;
-    devuelve `[]` incluso con queries normales, verificado 2026-07-18 — no es
-    un problema del guion). Si eso pasa, el beat construye igual pero sin esa
-    imagen (degradación silenciosa, `factory/pipeline.py::_produce_photo`
-    devuelve `None`). Después de un `build`, **revisá el manifest** —
+  - **Apify (`Tier.PHOTO`) puede igual devolver 0 resultados** para una query
+    muy específica o rara (normal en cualquier scraper — el actor
+    `hooli~google-images-scraper`, en uso desde 2026-07-18, ya funciona bien
+    en general). Si pasa, el beat construye igual pero sin esa imagen
+    (degradación silenciosa, `factory/pipeline.py::_produce_photo` devuelve
+    `None`). Después de un `build`, **revisá el manifest** —
     `out/<job-id>.manifest.json`, campo `beats[i].assets` — y si un beat con
     figura pública salió con `assets: []`, avisale a Alexander que esa foto
     no se pudo scrapear (nunca la reemplaces con una imagen generada: sin

@@ -281,6 +281,15 @@ class Factory:
         data = provider.download(urls[0])
         ext = "jpg"
         if asset.is_public_figure:
+            # Apify's search can return the wrong thing entirely for an
+            # otherwise normal query — a screenshot of an unrelated page, an
+            # infographic, not a photo of anyone (verified 2026-07-18). For a
+            # public figure that isn't a degrade-and-continue case like a
+            # missing result: shipping the WRONG face defeats the entire
+            # point of redacting the right one. No face at all -> drop the
+            # asset, same as a failed search.
+            if not redact.has_face(data):
+                return None
             # A real, named public figure — never shipped as a clean,
             # identifiable close-up. See factory.redact for what this does
             # and why it degrades to over-covering rather than skipping.
