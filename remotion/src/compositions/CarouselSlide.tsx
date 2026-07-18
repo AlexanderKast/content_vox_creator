@@ -12,14 +12,16 @@ import { SlideCounter } from "../components/SlideCounter";
 import { Stat } from "../components/Stat";
 import { Subtitle } from "../components/Subtitle";
 import { SwipeHint } from "../components/SwipeHint";
-import { SAFE, TYPE, fitTitleSize, hexToRgba, roles } from "../design";
+import { Typewriter } from "../components/Typewriter";
+import { SAFE, TYPE, headerLayout, hexToRgba, roles } from "../design";
 import type { Manifest } from "../types";
 
 /**
- * Mode CARRUSEL — 4:5, one looping slide, consumed MUTED. Editorial
- * "breaking-news" layout over a themed scene (or cream paper): persistent
- * series tag, section kicker, giant stat OR title, subtitle, badge, decorative
- * frame, swipe arrow, signature. A CTA slide can show a search-bar mockup.
+ * Mode CARRUSEL — 4:5, one looping slide, consumed MUTED. Header-over-image
+ * layout (2026-07-18 — moved from hero-over-image): kicker + title + subtitle
+ * stack top-down under the account chrome, the scene/cutout fills the lower
+ * frame, badge/searchbar/swipe hint sit at the very bottom. A CTA slide can
+ * show a search-bar mockup instead of a subtitle-only close.
  */
 const SAFE_INSET = SAFE.carousel;
 
@@ -54,8 +56,9 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
   }
 
   const hasStat = !!beat.stat;
-  const heroBottom = hasStat ? 30 : beat.subtitle ? 38 : 26;
-  const titleSize = fitTitleSize(beat.text);
+  const hasKicker = !!beat.kicker;
+  const { size: titleSize, titleTop, subtitleTop } = headerLayout(beat.text, hasKicker);
+  const legible = !!beat.scene;
 
   return (
     <AbsoluteFill>
@@ -73,16 +76,15 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           transform: `scale(${breathe})`,
         }}
       >
-        {/* Cutouts now render on TOP of a scene backdrop too, not only when
+        {/* Cutouts render on TOP of a scene backdrop too, not only when
             there's no scene — real Vox layout is background + layered
-            cutout props together (verified 2026-07-18: "aun le falta mas
-            recortes... que aparezcan otras imagenes como recortes" — a
-            scene-only slide with zero cutout reads flat next to the ones
-            that have both). Over a scene the cutout is a smaller accent
-            (70% scale), not the hero. y=-58 clears the title/subtitle block
-            at the bottom regardless — a public figure never gets the
-            size-0.56 hero slot or centered rotation-free treatment —
-            smallest scale, dead center, no rotation, regardless of index. */}
+            cutout props together. Over a scene the cutout is a smaller
+            accent (70% scale), not the hero. y is POSITIVE now (header
+            layout, 2026-07-18): the header (kicker/title/subtitle) owns the
+            top of the frame, so the cutout lives in the lower half instead
+            of dodging it up top — a public figure never gets the size-0.56
+            hero slot or centered rotation-free treatment — smallest scale,
+            dead center, no rotation, regardless of index. */}
         {beat.assets.map((asset, assetIndex) => {
           const compact = !!beat.scene;
           const baseScale = asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4;
@@ -91,29 +93,24 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
               key={asset.src}
               src={staticFile(asset.src)}
               delay={assetIndex * 3}
-              y={-58}
+              y={45}
               scale={compact ? baseScale * 0.7 : baseScale}
               x={asset.isPublicFigure ? 0 : assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
               rotate={asset.isPublicFigure ? 0 : assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
               index={assetIndex}
               loopFrames={durationInFrames}
+              isPublicFigure={asset.isPublicFigure}
             />
           );
         })}
 
-        {/* Section kicker — small accent label above the hero, on a subtle
-            surface chip so it stays legible over any part of the scene. */}
+        {/* HEADER — kicker, title, subtitle, top-down, above the scene/cutout
+            (2026-07-18: moved here from hero-over-image, matching reference
+            carousels that put the headline under the account chrome, not
+            over the middle of the photo). Kicker types on like the
+            reference sheet's typewriter annotation labels. */}
         {beat.kicker ? (
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              bottom: `${hasStat ? 46 : 54}%`,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
+          <div style={{ position: "absolute", left: 0, right: 0, top: "12%", display: "flex", justifyContent: "center" }}>
             <span
               style={{
                 fontFamily: tokens.displayFont,
@@ -127,28 +124,26 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
                 borderRadius: 6,
               }}
             >
-              {beat.kicker}
+              <Typewriter text={beat.kicker} delay={4} />
             </span>
           </div>
         ) : null}
 
-        {/* HERO: a giant stat, or the title. legibleOverPhoto: a flat
-            surface-color slide already has good ink/background contrast by
-            brand design; a photo backdrop (beat.scene) doesn't guarantee
-            that against ANY image tone, so it gets the white+outline
-            treatment instead (verified 2026-07-18, dark ink unreadable over
-            a dim office photo). */}
+        {/* legibleOverPhoto: a flat surface-color slide already has good
+            ink/background contrast by brand design; a photo backdrop
+            (beat.scene) doesn't guarantee that against ANY image tone, so it
+            gets the white+outline treatment instead. */}
         {hasStat ? (
-          <Stat text={beat.stat} tokens={tokens} bottom={heroBottom} loopFrames={durationInFrames} />
+          <Stat text={beat.stat} tokens={tokens} bottom={30} loopFrames={durationInFrames} />
         ) : (
           <KineticText
             text={beat.text}
             tokens={tokens}
             delay={2}
             size={titleSize}
-            bottom={heroBottom}
+            top={titleTop}
             loopFrames={durationInFrames}
-            legibleOverPhoto={!!beat.scene}
+            legibleOverPhoto={legible}
           />
         )}
 
@@ -156,9 +151,9 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           text={beat.subtitle}
           tokens={tokens}
           size={38}
-          bottom={hasStat ? 20 : 24}
+          top={subtitleTop}
           loopFrames={durationInFrames}
-          legibleOverPhoto={!!beat.scene}
+          legibleOverPhoto={legible}
         />
 
         <Badge text={beat.badge} tokens={tokens} top={22} right={13} rotate={-7} loopFrames={durationInFrames} />

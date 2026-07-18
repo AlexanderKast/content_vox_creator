@@ -57,7 +57,10 @@ export const MOTION = {
     word: { damping: 12, mass: 0.4, stiffness: 220 }, // a word landing
     wordImpact: { damping: 10, mass: 0.5, stiffness: 260 }, // hook word slam
     settle: { damping: 16, mass: 0.5, stiffness: 130 }, // exit / soft hand-off
-    sticker: { damping: 11, mass: 0.6, stiffness: 180 }, // cutout bounce-in
+    // Lower damping than the old 11 -> a visibly bouncier overshoot on entry
+    // (2026-07-18: "mas efectos a los objetos que aparecen" — the pop-in
+    // read as too flat/quick to register as a deliberate spring).
+    sticker: { damping: 8, mass: 0.6, stiffness: 180 }, // cutout bounce-in
   },
   frames: {
     exit: 10, // beat hand-off window
@@ -66,11 +69,16 @@ export const MOTION = {
     loopFade: 6, // seamless-loop foreground breath
     assetStagger: 4, // cutouts entering one after another
   },
-  // Ambient continuous motion (drift/float), in scene units.
+  // Ambient continuous motion (drift/float), in scene units. floatPx/swayDeg
+  // bumped 2026-07-18 (6->10, 1.2->2.5) — the cutout bob/tilt read as nearly
+  // static at the old amplitude. scalePulse is new: a slow breathing scale
+  // so a cutout never looks like a frozen sticker even mid-beat, only on
+  // objects (Cutout — a public figure does NOT get this, see Cutout.tsx).
   ambient: {
     driftPct: -20, // cutout slow upward drift over a beat
-    floatPx: 6, // cutout bob amplitude
-    swayDeg: 1.2, // cutout tilt amplitude
+    floatPx: 10, // cutout bob amplitude
+    swayDeg: 2.5, // cutout tilt amplitude
+    scalePulse: 0.05, // cutout slow breathing scale amplitude
     kenBurnsZoom: 0.05, // per-beat push-in
     textFloatPx: 2.5, // settled subtitle float
   },
@@ -118,6 +126,28 @@ export function fitTitleSize(text: string, base: number = TYPE.size.slide): numb
   if (words <= 7) return Math.round(base * 0.78);
   if (words <= 10) return Math.round(base * 0.62);
   return Math.round(base * 0.52);
+}
+
+// Carrusel header stack (2026-07-18 — title moved from "hero over the image"
+// to "header above it"): kicker, title, subtitle all top-anchored now, in
+// that order. subtitleTop has to clear however many lines the title wraps
+// to — same word-count buckets as fitTitleSize (smaller font at higher word
+// counts still wraps to more lines, so the buckets track independently, not
+// proportionally). Single source of truth so CarouselSlide never hand-picks
+// a top offset that goes stale the next time a title gets longer.
+export function headerLayout(text: string, hasKicker: boolean): {
+  size: number;
+  titleTop: number;
+  subtitleTop: number;
+} {
+  const words = text.trim().split(/\s+/).length;
+  const titleTop = hasKicker ? 20 : 13;
+  const estLines = words <= 4 ? 1 : words <= 10 ? 2 : 3;
+  return {
+    size: fitTitleSize(text),
+    titleTop,
+    subtitleTop: titleTop + estLines * 10 + 6,
+  };
 }
 
 // ---------------------------------------------------------------------------

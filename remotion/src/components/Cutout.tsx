@@ -23,7 +23,13 @@ export const Cutout: React.FC<{
   rotate?: number;
   index?: number;
   loopFrames?: number;
-}> = ({ src, delay = 0, x = 0, y = 0, scale = 1, rotate = 0, index = 0, loopFrames }) => {
+  // A public figure (content-vox-news) skips the breathing scale pulse —
+  // it stays visually calm/dignified, matching DISTANT_PLACEMENT's already
+  // subdued treatment (no rotation, smallest scale). Regular object cutouts
+  // get it for more visible "life" (2026-07-18: "mas efectos a los objetos
+  // que aparecen").
+  isPublicFigure?: boolean;
+}> = ({ src, delay = 0, x = 0, y = 0, scale = 1, rotate = 0, index = 0, loopFrames, isPublicFigure = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const local = frame - delay;
@@ -44,6 +50,12 @@ export const Cutout: React.FC<{
   const sway = looping
     ? Math.sin(loopAngle * 2 + phase) * MOTION.ambient.swayDeg
     : Math.sin((local / fps) * 0.8 + phase) * MOTION.ambient.swayDeg;
+  const pulse = isPublicFigure
+    ? 1
+    : 1 +
+      (looping
+        ? Math.sin(loopAngle * 1.5 + phase) * MOTION.ambient.scalePulse
+        : Math.sin((local / fps) * 1.1 + phase) * MOTION.ambient.scalePulse);
 
   return (
     <Img
@@ -56,7 +68,7 @@ export const Cutout: React.FC<{
         transform: [
           `translate(-50%, -50%)`,
           `translate(${x}%, ${y + drift / 10 + floatY / 10}%)`,
-          `scale(${entrance})`,
+          `scale(${entrance * pulse})`,
           `rotate(${rotate * entrance + sway}deg)`,
         ].join(" "),
         filter: ELEVATION.sticker,

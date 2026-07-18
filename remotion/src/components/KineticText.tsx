@@ -40,6 +40,10 @@ export const KineticText: React.FC<{
   tokens: BrandTokens;
   delay?: number;
   size?: number;
+  // Pass exactly one of top/bottom. `top` is the carrusel "header" layout
+  // (title anchored under the account chrome, image below it); `bottom` is
+  // the original hero-over-image layout (still used by BoxVideo).
+  top?: number;
   bottom?: number;
   weight?: number;
   wordTimings?: WordTiming[] | null;
@@ -54,10 +58,11 @@ export const KineticText: React.FC<{
   // dark ink on a dim office photo was unreadable).
   legibleOverPhoto?: boolean;
 }> = ({
-  text, tokens, delay = 0, size = TYPE.size.headline, bottom = 18,
+  text, tokens, delay = 0, size = TYPE.size.headline, top, bottom,
   weight = TYPE.weight.black, wordTimings, sequenceFrom = 0, loopFrames,
   impact = false, stagger = 2, legibleOverPhoto = false,
 }) => {
+  const anchorTop = top !== undefined;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const words = text.split(" ");
@@ -73,10 +78,10 @@ export const KineticText: React.FC<{
         position: "absolute",
         left: "8%",
         right: "8%",
-        bottom: `${bottom}%`,
+        ...(anchorTop ? { top: `${top}%` } : { bottom: `${bottom ?? 18}%` }),
         display: "flex",
         flexWrap: "wrap",
-        alignItems: "flex-end",
+        alignItems: anchorTop ? "flex-start" : "flex-end",
         // Generous WORD gap — Anton is very condensed, so a tight gap makes
         // words touch and read as one blob. Row gap keeps wrapped lines apart.
         gap: `${TYPE.rowGapEm}em 0.5em`,
@@ -124,8 +129,8 @@ export const KineticText: React.FC<{
               lineHeight: TYPE.lineHeight,
               textTransform: "uppercase",
               color: emphasized ? accent : ink,
-              transform: `translateY(${(1 - enter) * 34 + floatY}px) scale(${entryScale * pulse}) rotate(${tilt * enter}deg)`,
-              transformOrigin: "center bottom",
+              transform: `translateY(${(anchorTop ? -1 : 1) * (1 - enter) * 34 + floatY}px) scale(${entryScale * pulse}) rotate(${tilt * enter}deg)`,
+              transformOrigin: anchorTop ? "center top" : "center bottom",
               opacity: enter > 0.02 ? 1 : 0,
               letterSpacing: TYPE.tracking,
               textShadow: legibleOverPhoto

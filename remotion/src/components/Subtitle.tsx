@@ -16,11 +16,14 @@ export const Subtitle: React.FC<{
   tokens: BrandTokens;
   delay?: number;
   size?: number;
+  // Pass exactly one of top/bottom — see KineticText's prop of the same name.
+  top?: number;
   bottom?: number;
   loopFrames?: number;
   // See KineticText's prop of the same name — same reason, same fix.
   legibleOverPhoto?: boolean;
-}> = ({ text, tokens, delay = 6, size = 40, bottom = 26, loopFrames, legibleOverPhoto = false }) => {
+}> = ({ text, tokens, delay = 6, size = 40, top, bottom, loopFrames, legibleOverPhoto = false }) => {
+  const anchorTop = top !== undefined;
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { ink: brandInk } = roles(tokens);
@@ -41,9 +44,9 @@ export const Subtitle: React.FC<{
         position: "absolute",
         left: "10%",
         right: "10%",
-        bottom: `${bottom}%`,
+        ...(anchorTop ? { top: `${top}%` } : { bottom: `${bottom ?? 26}%` }),
         textAlign: "center",
-        transform: `translateY(${(1 - enter) * 22 + floatY}px)`,
+        transform: `translateY(${(anchorTop ? -1 : 1) * (1 - enter) * 22 + floatY}px)`,
         opacity: enter,
       }}
     >
