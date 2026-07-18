@@ -85,7 +85,7 @@ estas diferencias:
   nada.
 - **Figura pública real (persona nombrada, con cargo)**: el asset lleva
   ```json
-  { "id": "...", "description": "a government official speaking at a podium",
+  { "id": "...", "description": "Abelardo de la Espriella, president-elect of Colombia, speaking at a public event",
     "is_real_entity": true, "is_public_figure": true }
   ```
   Reglas, sin excepción:
@@ -93,11 +93,22 @@ estas diferencias:
     pública es SIEMPRE una foto real (`Tier.PHOTO`, Apify), **nunca
     generada**. `script.validate()` rechaza el build si falta
     `is_real_entity` — no es opcional, es un check de código.
-  - **El nombre de la persona NUNCA va en `description`.** Describí por
-    cargo/rol/contexto visual ("a head of state at a press conference"), no
-    por nombre. Esto no lo valida el código — es disciplina de quien escribe
-    el JSON (vos). Un nombre propio en el prompt de imagen es el error a no
-    cometer.
+  - **El nombre de la persona SIEMPRE va en `description`** (al revés de lo
+    que dice la regla para Cutout/Scene/Backdrop más abajo). `description`
+    acá es una query de búsqueda real para Apify (`Tier.PHOTO`), no un
+    prompt de imagen — sin el nombre, el buscador trae a cualquier persona
+    parecida y termina publicando a alguien equivocado presentado como si
+    fuera la figura pública correcta, que es peor que el riesgo que la
+    regla de "sin nombre" trataba de evitar. Verificado 2026-07-18: una
+    description sin nombre ("a Latin American president-elect at a public
+    event") devolvió una foto de Javier Milei en vez de la persona buscada.
+    Usá nombre completo + cargo: "Abelardo de la Espriella,
+    president-elect of Colombia" o similar.
+  - **La regla de "nunca el nombre en el prompt" SÍ aplica a cualquier otro
+    asset de esa misma persona que NO sea `is_public_figure`** (un
+    Cutout/Scene/Backdrop que generás con IA) — ahí el nombre solo tienta al
+    modelo a inventar una cara parecida, que es exactamente lo que no se
+    debe hacer.
   - El pipeline ya tapa los ojos automáticamente (`factory/redact.py`, local,
     sin costo) y Remotion ya la ubica en el placement más chico/alejado
     (`DISTANT_PLACEMENT` en `design.ts`) — no hace falta pedir nada de eso en
@@ -148,8 +159,9 @@ siempre es `None`). Las que SÍ aplican, siempre:
 - **Carrusel**: 6-10 slides, cada uno con `text` no vacío.
 - **Figura pública → `is_real_entity` + `is_public_figure` juntos**, siempre
   (código, ver PASO 2).
-- **Nunca el nombre de una figura pública en `description`** (disciplina, no
-  código — ver PASO 2).
+- **El nombre SÍ va en `description` cuando `is_public_figure: true`** (es
+  query de búsqueda real, no prompt de imagen) — **nunca** en cualquier otro
+  asset generado de esa persona (Cutout/Scene/Backdrop). Ver PASO 2.
 - **Sin cifra sin verificar**: igual que `content-vox-brief`, si no lo
   verificaste en el PASO 0, el brief dice "dato por verificar", nunca lo
   inventa.

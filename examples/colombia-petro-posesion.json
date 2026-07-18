@@ -1,0 +1,25 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "template": "vox-paper",
+  "topic": "Petro no va a la posesion de De la Espriella (7 de agosto 2026)",
+  "hook": "PETRO NO VA A LA POSESION DEL 7 DE AGOSTO",
+  "cta": "¿Qué creés que pasa el 7 de agosto? Comentá.",
+  "beats": [
+    { "index": 1, "text": "PETRO NO VA A LA POSESION DEL 7 DE AGOSTO", "seconds": 5,
+      "scene": "an empty presidential desk with a Colombian flag, dramatic editorial lighting" },
+    { "index": 2, "text": "TAMPOCO LE VA A DAR LA MANO A DE LA ESPRIELLA", "subtitle": "Lo dijo en consejo de ministros, 15 de julio", "seconds": 5,
+      "scene": "two office chairs facing each other with a visible gap between them" },
+    { "index": 3, "text": "DICE QUE HUBO FRAUDE — SIN PRUEBA PUBLICA PRESENTADA", "subtitle": "Es una acusacion de Petro, no un hecho confirmado", "seconds": 6,
+      "scene": "a magnifying glass over a ballot paper" },
+    { "index": 4, "text": "LA POSESION ES EL 7 DE AGOSTO DE 2026", "subtitle": "Fecha confirmada", "seconds": 5,
+      "scene": "a wall calendar with one date circled" },
+    { "index": 5, "text": "EL PRESIDENTE SALIENTE, EN PLENA RUPTURA", "subtitle": "", "seconds": 5,
+      "assets": [{ "id": "pf1", "description": "Gustavo Petro, president of Colombia, in a government cabinet meeting setting", "is_real_entity": true, "is_public_figure": true }] },
+    { "index": 6, "text": "EL PRESIDENTE ELECTO, YA ANUNCIANDO CAMBIOS", "subtitle": "", "seconds": 5,
+      "assets": [{ "id": "pf2", "description": "Abelardo de la Espriella, president-elect of Colombia, at a public event", "is_real_entity": true, "is_public_figure": true }] },
+    { "index": 7, "text": "TAMBIEN CAMBIA LA POLITICA EXTERIOR", "subtitle": "Se retira el apoyo a la demanda contra Israel", "seconds": 6,
+      "scene": "a world globe with crossed flags, editorial illustration" },
+    { "index": 8, "text": "¿QUE CREES QUE PASA EL 7 DE AGOSTO?", "subtitle": "Comentá abajo.", "seconds": 5 }
+  ]
+}

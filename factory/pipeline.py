@@ -278,18 +278,36 @@ class Factory:
         if not urls:
             return None  # graceful degradation: the build continues without it
 
-        data = provider.download(urls[0])
+        # Try each candidate URL in order rather than betting everything on
+        # the first one. Two independent failure modes showed up in the same
+        # afternoon (2026-07-18): a URL that 404s on download (dead link,
+        # hotlink-blocked), and — for a public figure — a URL that downloads
+        # fine but isn't even a photo of a person (has_face rejects it, see
+        # below). Either one on url[0] alone used to take the whole beat's
+        # asset down with it; now it just moves to the next candidate.
+        data: bytes | None = None
+        for url in urls:
+            try:
+                candidate = provider.download(url)
+            except Exception as exc:  # noqa: BLE001 - a single bad URL must not sink the build
+                print(f"Photo download failed for '{asset.description}' ({url}): {exc}")
+                continue
+            if asset.is_public_figure and not redact.has_face(candidate):
+                # Apify's search can return the wrong thing entirely for an
+                # otherwise normal query — a screenshot of an unrelated page,
+                # an infographic, not a photo of anyone, or even a real photo
+                # of the WRONG person (verified 2026-07-18). Shipping any of
+                # those as a redacted "figure" defeats the entire point —
+                # try the next candidate instead of accepting it.
+                continue
+            data = candidate
+            break
+
+        if data is None:
+            return None  # every candidate failed or (public figure) had no usable face
+
         ext = "jpg"
         if asset.is_public_figure:
-            # Apify's search can return the wrong thing entirely for an
-            # otherwise normal query — a screenshot of an unrelated page, an
-            # infographic, not a photo of anyone (verified 2026-07-18). For a
-            # public figure that isn't a degrade-and-continue case like a
-            # missing result: shipping the WRONG face defeats the entire
-            # point of redacting the right one. No face at all -> drop the
-            # asset, same as a failed search.
-            if not redact.has_face(data):
-                return None
             # A real, named public figure — never shipped as a clean,
             # identifiable close-up. See factory.redact for what this does
             # and why it degrades to over-covering rather than skipping.
