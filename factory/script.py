@@ -495,7 +495,12 @@ def validate(script: Script) -> list[str]:
                     "(con voz, ~10s permite una frase completa por slide)."
                 )
     else:
-        if not 45 <= script.duration_seconds <= 90:
+        # Generic duration bound applies ONLY to formula-less scripts. When a
+        # formula is declared, ITS range governs (see validate_formula) and this
+        # generic rule must NOT stack on top — otherwise a valid F1 (75-100s per
+        # formulas.py) gets killed by the narrower generic bound. The formula
+        # owns its own timing; this is the fallback for scripts without one.
+        if script.formula is None and not 45 <= script.duration_seconds <= 90:
             errors.append(
                 f"Video runs {script.duration_seconds}s. Target 60-75s."
             )
