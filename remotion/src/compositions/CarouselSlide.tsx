@@ -148,7 +148,17 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
       <Signature tokens={tokens} bottom={8} left={8} />
       {!isLast ? <SwipeHint tokens={tokens} /> : null}
 
-      {manifest.music ? <Audio src={staticFile(manifest.music)} volume={0.22} loop /> : null}
+      {/* Music ducks under a slide's own narration (content-vox-news) the
+          same way BoxVideo ducks it under the video's continuous voice —
+          the voice leads, the bed is a floor under it, not competing. */}
+      {manifest.music ? (
+        <Audio src={staticFile(manifest.music)} volume={beat.voice ? 0.12 : 0.22} loop />
+      ) : null}
+      {/* Per-slide narration (content-vox-news). Not looped — one read per
+          slide view, unlike the visual loop around it. If the narration
+          runs longer than beat.seconds it's cut by this Sequence's own
+          bound; the skill sizes `seconds` to the narration for this reason. */}
+      {beat.voice ? <Audio src={staticFile(beat.voice)} /> : null}
       {beat.sfx.map((cue, i) => (
         <Sequence key={`${cue.src}-${i}`} from={cue.frame} name={`sfx-${cue.src}`}>
           <Audio src={staticFile(cue.src)} />

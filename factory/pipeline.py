@@ -264,8 +264,13 @@ class Factory:
         # is_public_figure is part of the key: the SAME query must never
         # serve a cached un-redacted photo once an asset asks for redaction
         # (or vice versa) — the two are different artifacts, not a cache hit.
+        # redact.REDACT_VERSION is part of it too, same reason as
+        # chroma.CHROMA_VERSION elsewhere: a treatment change (e.g. the
+        # 2026-07-18 switch from a raw black bar to duotone + red) must
+        # reprocess, never quietly serve the old look from cache.
         key = cache.content_hash(
-            source="apify", query=asset.description, public_figure=asset.is_public_figure
+            source="apify", query=asset.description, public_figure=asset.is_public_figure,
+            redact=redact.REDACT_VERSION if asset.is_public_figure else None,
         )
         hit = cache.get(key, "png" if asset.is_public_figure else "jpg")
         if hit:
@@ -309,9 +314,10 @@ class Factory:
         ext = "jpg"
         if asset.is_public_figure:
             # A real, named public figure — never shipped as a clean,
-            # identifiable close-up. See factory.redact for what this does
-            # and why it degrades to over-covering rather than skipping.
-            data = redact.black_bar_eyes(data)
+            # identifiable close-up, and never as a raw color photo with a
+            # black box (reads as moderation, not design). See
+            # factory.redact for the duotone + eye-bar treatment.
+            data = redact.stylize_public_figure(data)
             ext = "png"
         path = cache.put(key, ext, data)
         db.record_asset(
@@ -470,12 +476,28 @@ class Factory:
 
         voice_id = tokens.get("voiceId")
 
-        # VIDEO carries a continuous voice track. CARRUSEL is consumed muted —
-        # it tells its whole story through on-screen title + subtitle text, so
-        # it gets NO voice (just a music bed). See CarouselSlide.
+        # VIDEO carries one continuous voice track. CARRUSEL is muted by
+        # default (content-vox-brief: it tells its story through on-screen
+        # title + subtitle text) — UNLESS a beat declares its own
+        # `narration`, in which case that slide gets its own voice clip
+        # (content-vox-news: narrated explainer carousels). No narration on
+        # any beat -> voice_by_beat stays empty -> identical to the old
+        # always-muted behavior, so this is backward compatible.
         voice_path = None
         if voice_id and script.mode is Mode.VIDEO:
             voice_path = self._produce_voice(job_id, script, voice_id)
+
+        voice_by_beat: dict[int, str] = {}
+        if voice_id and script.mode is Mode.CARRUSEL:
+            for beat in script.beats:
+                if not beat.narration.strip():
+                    continue
+                try:
+                    p = self._produce_voice_text(job_id, beat.narration, voice_id)
+                    if p:
+                        voice_by_beat[beat.index] = _publish_for_remotion(p)
+                except Exception as exc:  # noqa: BLE001 - degrade, never block
+                    print(f"Voice generation failed for beat {beat.index}, slide stays silent: {exc}")
 
         # Music bed for BOTH modes now (each carrusel slide plays it low under
         # the voice). Degrade gracefully: a music failure never blocks a build.
@@ -532,6 +554,7 @@ class Factory:
                     for a in beat.assets if produced.get(a.id)
                 ],
                 "scene": scene_by_beat.get(beat.index),
+                "voice": voice_by_beat.get(beat.index),
                 "sfx": sfx_entries,
                 "sequenceFrom": cursor_frames,
                 "wordTimings": word_timings_by_beat.get(beat.index),

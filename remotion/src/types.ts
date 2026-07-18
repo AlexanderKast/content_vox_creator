@@ -44,6 +44,11 @@ export type Beat = {
   search: string;
   // Full-frame themed scene background for this beat, or null → cream paper.
   scene: string | null;
+  // Per-slide narration clip (content-vox-news carousels — factory.pipeline
+  // produces this from beat.narration). null on video beats (VIDEO uses one
+  // continuous voice track instead, see Manifest.voice) and on carrusel
+  // beats that declared no narration (content-vox-brief default: muted).
+  voice: string | null;
   seconds: number;
   assets: BeatAsset[];
   // One entry per SFX cue this beat triggers (cutout entrance -> pop, beat

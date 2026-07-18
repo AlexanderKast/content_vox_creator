@@ -77,6 +77,16 @@ estas diferencias:
 - **Marcador de capítulo en pantalla**: el primer beat de cada capítulo lleva
   `"kicker": "CAPÍTULO 2 DE 3"` (campo `Beat.kicker`, ya existe — no hace
   falta código nuevo).
+- **`narration` por beat, en carrusel también** (no solo en video). A
+  diferencia de `content-vox-brief` (carrusel mudo por diseño), acá cada
+  slide lleva su propia narración — el pipeline le genera una voz aparte por
+  beat (`factory/pipeline.py`, campo `beats[i].voice` en el manifest). Sin
+  `narration`, el slide queda mudo (compatible con guiones viejos), pero
+  para `content-vox-news` **ponela siempre**: es lo que pidió Alexander.
+  `seconds` del beat tiene que alcanzar para leer la narración completa —
+  la voz se corta si el slide termina antes (regla general: ~2.5-3
+  palabras por segundo en español hablado; una narración de 15 palabras
+  necesita ~6s, no 4s).
 - **`formula`**: nunca lo declares. Este contenido no pasa por F1-F5 (esas
   reglas son de marca personal — credenciales, prueba propia, CTA triple — no
   aplican a una noticia objetiva).

@@ -1,9 +1,17 @@
-"""Eye redaction for real photos of public figures.
+"""Eye redaction + style treatment for real photos of public figures.
 
 A public-figure asset (factory.router.Asset.is_public_figure) is always a
 REAL scraped photo (factory.providers.photos_apify — never invented). Before
-that photo is cached or rendered, this module blacks out the eyes so the
-video never carries a clean, identifiable close-up.
+that photo is cached or rendered, this module:
+  1. blacks out (in Hot Red) the eyes so the video never carries a clean,
+     identifiable close-up, and
+  2. converts the whole photo to the same black-and-white halftone duotone
+     treatment as every generated `vox-paper` cutout (factory.router), so a
+     real photo doesn't read as "a photo with a censor bar" sitting next to
+     illustrated cutouts — it reads as the same design system. A raw black
+     rectangle on an unmodified color photo looked like a moderation
+     artifact, not a deliberate choice (verified 2026-07-18, Alexander:
+     "las fotos no se ven bien").
 
 Local only: OpenCV's bundled Haar cascades, no network call, no per-run cost.
 If no face/eyes are found (bad angle, sunglasses, low resolution — Apify
@@ -17,6 +25,13 @@ from __future__ import annotations
 import cv2
 import numpy as np
 
+# Bump when the treatment changes — factory.pipeline._produce_photo folds
+# this into the cache key, so a version bump forces every public-figure
+# photo to be reprocessed instead of quietly serving the old look from
+# cache. v1 was a raw black rectangle on the unmodified color photo; v2 is
+# the duotone + Hot Red bar below.
+REDACT_VERSION = "redact-v2"
+
 # Bundled with opencv-python-headless — no download, no external asset.
 _FACE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
 _EYE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_eye.xml"
@@ -25,6 +40,14 @@ _EYE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_eye.xml"
 # image's height from the top. A headshot's eyes sit well within this band;
 # it over-covers non-headshot framing on purpose.
 _FALLBACK_BAND_FRACTION = 0.4
+
+# vox-paper palette (factory.router — keep these two in sync). OpenCV is
+# BGR, not RGB.
+_INK_BLACK_BGR = (26, 26, 26)       # #1A1A1A
+_ARCHIVAL_TAN_BGR = (156, 187, 201)  # #C9BB9C
+_HOT_RED_BGR = (31, 46, 182)         # #B62E1F — reserved for strokes/marks,
+                                      # same rule the style sheet applies to
+                                      # every other accent use in this project.
 
 _face_cascade: cv2.CascadeClassifier | None = None
 _eye_cascade: cv2.CascadeClassifier | None = None
@@ -66,27 +89,22 @@ def has_face(image_bytes: bytes) -> bool:
     return len(faces) > 0
 
 
-def black_bar_eyes(image_bytes: bytes) -> bytes:
-    """Return `image_bytes` (any format OpenCV can decode) re-encoded as PNG
-    with the eyes (or, failing detection, the upper band) blacked out."""
-    array = np.frombuffer(image_bytes, dtype=np.uint8)
-    image = cv2.imdecode(array, cv2.IMREAD_COLOR)
-    if image is None:
-        raise ValueError("redact.black_bar_eyes: could not decode image bytes")
-
+def _eye_bars(image: np.ndarray) -> list[tuple[int, int, int, int]]:
+    """(x, y, w, h) boxes, in full-image coords, generously padded over each
+    detected eye — or, failing detection, one box over the image's upper
+    band. Padded because a tight box over just the pupils still leaves the
+    eye shape/expression visible, which is enough to identify someone. This
+    is a redaction, not a decoration."""
     height, width = image.shape[:2]
     face_cascade, eye_cascade = _cascades()
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    bars: list[tuple[int, int, int, int]] = []  # (x, y, w, h) in full-image coords
+    bars: list[tuple[int, int, int, int]] = []
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
     for (fx, fy, fw, fh) in faces:
         face_gray = gray[fy:fy + fh, fx:fx + fw]
         eyes = eye_cascade.detectMultiScale(face_gray, scaleFactor=1.1, minNeighbors=6, minSize=(15, 15))
         for (ex, ey, ew, eh) in eyes:
-            # Pad generously — a tight box over just the pupils still leaves
-            # the eye shape/expression visible, which is enough to identify
-            # someone. This is a redaction, not a decoration.
             pad_x, pad_y = round(ew * 0.5), round(eh * 0.8)
             bars.append((
                 max(0, fx + ex - pad_x),
@@ -96,13 +114,43 @@ def black_bar_eyes(image_bytes: bytes) -> bytes:
             ))
 
     if not bars:
-        band_height = round(height * _FALLBACK_BAND_FRACTION)
-        bars = [(0, 0, width, band_height)]
+        bars = [(0, 0, width, round(height * _FALLBACK_BAND_FRACTION))]
+    return bars
+
+
+def _duotone(image: np.ndarray) -> np.ndarray:
+    """Map grayscale intensity to a gradient between Ink Black (shadows) and
+    Archival Tan (highlights) — a 256-entry LUT, not a hard 2-level
+    threshold, so real tonal gradation (a face, folds of a suit) survives
+    instead of flattening into a silhouette. Matches the halftone
+    black-and-white cutout treatment every other `vox-paper` asset gets
+    (factory.router.CUTOUT_PROMPTS["vox-paper"])."""
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+    lut = np.zeros((256, 3), dtype=np.uint8)
+    for channel in range(3):
+        dark = _INK_BLACK_BGR[channel]
+        light = _ARCHIVAL_TAN_BGR[channel]
+        lut[:, channel] = np.linspace(dark, light, 256)
+    indices = (gray * 255).astype(np.uint8)
+    return lut[indices]
+
+
+def stylize_public_figure(image_bytes: bytes) -> bytes:
+    """Return `image_bytes` (any format OpenCV can decode) re-encoded as PNG:
+    duotone black-and-white (matches the rest of the vox-paper look) with a
+    Hot Red bar over the eyes (or, failing detection, the upper band)."""
+    array = np.frombuffer(image_bytes, dtype=np.uint8)
+    image = cv2.imdecode(array, cv2.IMREAD_COLOR)
+    if image is None:
+        raise ValueError("redact.stylize_public_figure: could not decode image bytes")
+
+    bars = _eye_bars(image)  # detected on the ORIGINAL image — duotone flattens contrast
+    styled = _duotone(image)
 
     for (bx, by, bw, bh) in bars:
-        cv2.rectangle(image, (bx, by), (bx + bw, by + bh), (0, 0, 0), thickness=-1)
+        cv2.rectangle(styled, (bx, by), (bx + bw, by + bh), _HOT_RED_BGR, thickness=-1)
 
-    ok, encoded = cv2.imencode(".png", image)
+    ok, encoded = cv2.imencode(".png", styled)
     if not ok:
-        raise RuntimeError("redact.black_bar_eyes: PNG re-encode failed")
+        raise RuntimeError("redact.stylize_public_figure: PNG re-encode failed")
     return encoded.tobytes()

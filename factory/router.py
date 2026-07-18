@@ -121,10 +121,10 @@ CUTOUT_PROMPTS: dict[str, str] = {
         "no shadow on background, centered"
     ),
     "vox-paper": (
-        "{description}, cut-paper collage illustration, flat bold layered shapes, visible "
-        "torn and hand-cut paper edges with a subtle drop shadow, construction-paper "
-        "texture, thick black ink outline, limited warm editorial color palette (mustard, "
-        "rust, teal, cream), no gradients, no photorealism, Vox-explainer editorial style, "
+        "{description}, black-and-white halftone cutout in a documentary-collage explainer "
+        "style, rough white paper keyline around the silhouette, offset Hot Red (#B62E1F) "
+        "accent stroke behind it, print grain and halftone dot texture, no color in the "
+        "subject itself, no gradients, no glossy 3D, no photorealistic color, "
         "isolated on pure green screen background #00FF00, no shadow on background, centered"
     ),
 }
@@ -148,10 +148,10 @@ SCENE_PROMPTS: dict[str, str] = {
         "Isolated on pure green screen background #00FF00, no shadow on background."
     ),
     "vox-paper": (
-        "{description}. Cut-paper collage illustration, flat bold layered shapes with visible "
-        "torn and hand-cut paper edges and soft drop shadows, construction-paper texture, "
-        "thick black ink outline, limited warm editorial color palette (mustard, rust, teal, "
-        "cream), generous negative space, Vox-explainer editorial style. "
+        "{description}. Black-and-white halftone cutout in a documentary-collage explainer "
+        "style, rough white paper keyline, offset Hot Red (#B62E1F) accent stroke behind it, "
+        "print grain and halftone dot texture, generous negative space, no color in the "
+        "subject itself, no gradients, no glossy 3D. "
         "Isolated on pure green screen background #00FF00, no shadow on background."
     ),
 }
@@ -180,36 +180,31 @@ BACKDROP_PROMPTS: dict[str, str] = {
         "{description}. Full-frame vertical 9:16 illustrated scene, vintage engraving and "
         "woodcut style on a WARM CREAM paper background, black ink line work with warm "
         "orange-red (#E8451F) accents, fine halftone shading, retro editorial newspaper "
-        "poster aesthetic. Keep the LOWER THIRD light and empty so large dark text can sit "
-        "over it. ABSOLUTELY NO TEXT: no words, no letters, no captions, no titles, no "
-        "labels, no signage, no writing, no typography anywhere in the image — imagery only."
+        "poster aesthetic. Leave the lower third calm and visually quiet — a caption is "
+        "composited on top afterward, outside this image. Pure imagery, no typography."
     ),
     "dark-luxury-gold": (
         "{description}. Full-frame vertical 9:16 illustrated scene, vintage engraving "
         "and woodcut style on an ELEGANT DARK near-black background, luminous GOLD and "
         "warm amber line work and highlights, fine halftone shading, subtle green accents, "
         "ornate gold decorative border framing the edges, premium dark AI-luxury poster "
-        "aesthetic. Keep the LOWER THIRD dark and empty so large light text can sit over it. "
-        "ABSOLUTELY NO TEXT: no words, no letters, no captions, no titles, no labels, "
-        "no signage, no writing, no typography anywhere in the image — imagery only."
+        "aesthetic. Leave the lower third calm and visually quiet — a caption is composited "
+        "on top afterward, outside this image. Pure imagery, no typography."
     ),
     "minimal-flat": (
         "{description}. Full-frame vertical 9:16 illustrated scene, minimal flat vector "
         "illustration, clean geometric shapes, thick outlines, two-tone limited palette, "
         "generous negative space, no gradients, no texture, modern editorial poster "
-        "aesthetic. Keep the LOWER THIRD empty and low-contrast so large text can sit over "
-        "it. ABSOLUTELY NO TEXT: no words, no letters, no captions, no titles, no labels, "
-        "no signage, no writing, no typography anywhere in the image — imagery only."
+        "aesthetic. Leave the lower third calm and visually quiet — a caption is composited "
+        "on top afterward, outside this image. Pure imagery, no typography."
     ),
     "vox-paper": (
-        "{description}. Full-frame vertical 9:16 illustrated scene, cut-paper collage style, "
-        "layered flat paper shapes with visible torn and hand-cut edges and soft drop "
-        "shadows, warm cream/off-white paper background texture, thick black ink outlines, "
-        "limited warm editorial color palette (mustard, rust, teal, cream), modern "
-        "Vox-explainer poster aesthetic. Keep the LOWER THIRD light and empty so large dark "
-        "text can sit over it. ABSOLUTELY NO TEXT: no words, no letters, no captions, no "
-        "titles, no labels, no signage, no writing, no typography anywhere in the image — "
-        "imagery only."
+        "{description}. Full-frame vertical 9:16 'the stage' — a muted archival tan "
+        "(#C9BB9C) map/paper-texture field, evenly toned, pre-lit, print grain and subtle "
+        "halftone dot texture, matte finish, no gloss, no lens flares, desaturated "
+        "documentary-collage explainer aesthetic with at most one Hot Red (#B62E1F) accent "
+        "stroke or underline. Leave the lower third calm and visually quiet — a caption is "
+        "composited on top afterward, outside this image. Pure imagery, no typography."
     ),
 }
 

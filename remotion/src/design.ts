@@ -84,7 +84,13 @@ export const TYPE = {
   weight: { black: 900, bold: 700, medium: 600 },
   tracking: "-0.02em",
   lineHeight: 1.0, // per-word box height (real fontSize does the sizing)
-  rowGapEm: 0.26, // vertical gap between wrapped lines — stops line collisions
+  // Vertical gap between wrapped lines. 0.26 wasn't enough once a row holds
+  // an emphasisScale (1.18x) word — the next row's box starts from the
+  // container's base line-height, not the taller row's actual rendered
+  // height, so a wrapped title with an emphasized word on one line would
+  // collide with the line below it (verified 2026-07-18, "POSESION DEL 7" /
+  // "DE AGOSTO"). 0.55 clears that case with real fontSize headroom.
+  rowGapEm: 0.55,
   emphasisScale: 1.18, // numbers + long/key words come in bigger (real fontSize)
   deemphasisScale: 0.9, // connectors step back — subtle, not a size jump
   // On-screen display sizes by role (px at 1080-wide comp).

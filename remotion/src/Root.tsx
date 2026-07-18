@@ -45,7 +45,7 @@ const FALLBACK: Manifest = {
   beats: [
     {
       index: 1, text: "SIN MANIFEST CARGADO", subtitle: "", kicker: "", badge: "", stat: "", search: "", scene: null,
-      seconds: 3, assets: [], sfx: [], sequenceFrom: 0, wordTimings: null,
+      voice: null, seconds: 3, assets: [], sfx: [], sequenceFrom: 0, wordTimings: null,
     },
   ],
   loop: false,
@@ -54,9 +54,9 @@ const FALLBACK: Manifest = {
 };
 
 export const RemotionRoot: React.FC = () => {
-  useDisplayFont();
   const props = getInputProps() as Partial<Manifest> & { slideIndex?: number };
   const manifest: Manifest = { ...FALLBACK, ...props } as Manifest;
+  useDisplayFont(manifest.tokens.displayFont);
 
   const totalFrames = Math.max(
     1,
