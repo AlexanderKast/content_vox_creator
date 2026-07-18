@@ -1,0 +1,87 @@
+{
+  "mode": "video",
+  "brand": "alexander",
+  "topic": "Por que crecen los musculos",
+  "hook": "Tus musculos no crecen en el gimnasio.",
+  "cta": "Team entrenar duro o team dormir? Dilo en los comentarios y sigue la cuenta.",
+  "music_prompt": "understated documentary underscore, tense, minimal percussion",
+  "beats": [
+    {
+      "index": 1,
+      "text": "NO CRECEN EN EL GIMNASIO",
+      "narration": "Tus musculos no crecen en el gimnasio. Cuando entrenas, en realidad los estas rompiendo.",
+      "seconds": 6,
+      "assets": [{ "id": "tear", "description": "muscle fiber tearing under tension, cross section" }]
+    },
+    {
+      "index": 2,
+      "text": "MICRODESGARROS",
+      "narration": "Cada repeticion crea miles de microdesgarros en la fibra.",
+      "seconds": 5,
+      "assets": [{ "id": "fiber", "description": "microscopic muscle fiber with visible micro tears" }]
+    },
+    {
+      "index": 3,
+      "text": "EL DANO ES LA SENAL",
+      "narration": "Y eso no es un accidente. Ese dano es la senal.",
+      "seconds": 4,
+      "assets": [{ "id": "signal", "description": "warning signal pulse traveling along a nerve, minimal illustration" }]
+    },
+    {
+      "index": 4,
+      "text": "MODO REPARACION",
+      "narration": "Tu cuerpo entra en modo reparacion y activa celulas satelite que reconstruyen la fibra.",
+      "seconds": 6,
+      "assets": [{ "id": "repair", "description": "satellite cells repairing muscle tissue, glowing" }]
+    },
+    {
+      "index": 5,
+      "text": "MAS GRUESA. MAS FUERTE.",
+      "narration": "Pero no la deja igual. La reconstruye mas gruesa y mas fuerte.",
+      "seconds": 5,
+      "assets": [{ "id": "growth", "description": "thicker muscle fiber after repair, side by side comparison" }]
+    },
+    {
+      "index": 6,
+      "text": "ESO ES HIPERTROFIA",
+      "narration": "Eso es hipertrofia. Y no pasa mientras levantas. Pasa despues.",
+      "seconds": 5,
+      "assets": [{ "id": "hyper", "description": "clock over a resting muscle, editorial cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "1. SOBRECARGA",
+      "narration": "Solo ocurre con tres cosas. La primera: sobrecarga. Si el estimulo no sube, el cuerpo no ve razon para cambiar.",
+      "seconds": 7,
+      "assets": [{ "id": "overload", "description": "heavy barbell plate, dramatic low angle" }]
+    },
+    {
+      "index": 8,
+      "text": "2. PROTEINA",
+      "narration": "La segunda: proteina. Sin material, no hay obra.",
+      "seconds": 5,
+      "assets": [{ "id": "protein", "description": "protein molecule structure, editorial illustration" }]
+    },
+    {
+      "index": 9,
+      "text": "3. DESCANSO",
+      "narration": "Y la tercera: descanso. La construccion pasa mientras duermes.",
+      "seconds": 5,
+      "assets": [{ "id": "sleep", "description": "crescent moon over a pillow, minimal cutout" }]
+    },
+    {
+      "index": 10,
+      "text": "ENTRENAR ES SOLO LA ORDEN",
+      "narration": "Por eso entrenar mas no siempre es crecer mas. Entrenar es dar la orden. Comer y dormir es ejecutarla.",
+      "seconds": 7,
+      "assets": [{ "id": "order", "description": "blueprint being handed to a construction worker, cutout style" }]
+    },
+    {
+      "index": 11,
+      "text": "SI NO DUERMES, NO CRECES",
+      "narration": "Si no duermes, no creces. Asi de simple. Entrena, come, duerme.",
+      "seconds": 6,
+      "assets": [{ "id": "cycle", "description": "circular loop diagram: train, eat, sleep" }]
+    }
+  ]
+}
