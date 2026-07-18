@@ -56,7 +56,9 @@ Esta skill nunca escribe un guion sobre una afirmación sin verificar.
 ### PASO 1 — Entender sin interrogar
 
 Igual que `content-vox-brief`: infiere modo (carrusel/video/reel), marca
-(default `alexander`), y de la guidance prompt sacá:
+(default **`orgullosamentepaisa`** — la marca de la fanpage de noticias, sin
+handle propio de Alexander; `@alexemprendee` es otro proyecto, no se mezcla
+acá), y de la guidance prompt sacá:
 - **tema**: si lo dio, o el que investigaste en el PASO 0.
 - **capítulos**: número al final del pedido ("3 capítulos") → `chapters`.
   **Default 1, máximo 4.** Cada capítulo es ~30s (25-35s de slack) —
