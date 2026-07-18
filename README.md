@@ -114,11 +114,13 @@ Regla de fades matizada: se prohíbe el fade-**in** (entra con spring, se siente
 ### El router de 4 pisos
 
 ```
-¿Persona real, logo o marca?                → Apify              $0.0029
+¿Persona real, logo o marca?                → Apify              $0.0619 por búsqueda
 ¿Personaje que se repite (Alexander/Kiro)?  → Magnific           $0.08
 ¿Texto en imagen o composición compleja?    → Nano Banana PRO    $0.14
 ¿Cualquier otra cosa?                       → Flux Klein 4B      $0.008
 ```
+
+> **Apify no cuesta $0.0029 por foto** — eso era la tarifa por-imagen aislada, y mentía. Es Pay-Per-Event: `RUN_STARTED $0.005 + IMAGE_SCRAPED $0.0023 × 3 + SERP_PAGE $0.05 = $0.0619 por BÚSQUEDA` (una búsqueda = una corrida, dispara las tres tarifas juntas; ver `cost.photo_price`). El número real es **21x** lo documentado antes. **La regla del router no cambia:** el ruteo a Apify es por NECESIDAD, no por precio — una persona/logo real no se puede generar con IA a ningún precio, así que sigue siendo PHOTO aunque ahora sea el segundo tier más caro después de CHARACTER.
 
 Es una regla **económica** antes que estética — pero económica no es "el más barato siempre": es el modelo más barato que da la calidad que este tier necesita. Subido un escalón el 2026-07-17, a pedido: cutouts de Z-Image ($0.005) a Flux Klein 4B ($0.008, mejor adherencia al prompt), y escenas de Nano Banana 2 Fast ($0.045) a Nano Banana PRO ($0.14 — modelo distinto, Gemini 3.0 Pro Image, no una bandera "pro" sobre el mismo). Precios y slugs reales verificados contra `wavespeed.ai/docs` esa fecha — el "flux-klein" y "nano-banana-pro" que había antes en `cost.py` no correspondían a ningún endpoint real.
 
