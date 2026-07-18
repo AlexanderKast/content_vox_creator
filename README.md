@@ -156,7 +156,8 @@ Las pruebas de humo verifican que muerden de verdad:
 |---|---|
 | Slide de carrusel sin texto → rechazada | `script.validate` |
 | Carrusel de 20 slides → rechazado (6–10) | `script.validate` |
-| Video fuera de 60–75s → rechazado | `script.validate` |
+| Video SIN fórmula fuera de 45–90s → rechazado (ideal 60–75) | `script.validate` |
+| Video CON fórmula fuera del rango de su fórmula → rechazado | `script.validate_formula` |
 | Beat estático >1.2s sin visual → rechazado | `script.validate` |
 | Presupuesto excedido → no arranca | `cost.enforce_budget` |
 | Persona real generada con IA → imposible | `router.route` |

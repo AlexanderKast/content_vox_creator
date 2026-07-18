@@ -502,7 +502,8 @@ def validate(script: Script) -> list[str]:
         # owns its own timing; this is the fallback for scripts without one.
         if script.formula is None and not 45 <= script.duration_seconds <= 90:
             errors.append(
-                f"Video runs {script.duration_seconds}s. Target 60-75s."
+                f"Video dura {script.duration_seconds}s. Debe estar entre 45 y "
+                "90s (ideal 60-75)."
             )
         for beat in script.beats:
             if beat.seconds > 1.2 and not beat.assets and not beat.scene:
