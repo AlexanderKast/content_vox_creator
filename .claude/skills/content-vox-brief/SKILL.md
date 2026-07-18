@@ -84,7 +84,7 @@ Estructura (campos que `factory.cli.load_script` acepta):
     "lead_magnet_path": "assets/lead-magnets/<archivo>.md"
   },
   "beats": [
-    { "index": 1, "text": "...", "subtitle": "...", "seconds": 6,
+    { "index": 1, "aida": "atencion", "text": "TITULO CORTO", "subtitle": "La frase que lo explica.", "seconds": 6,
       "scene": "full-frame backdrop description, no text",
       "assets": [{ "id": "x", "description": "... editorial cutout" }] }
   ]
@@ -93,12 +93,31 @@ Estructura (campos que `factory.cli.load_script` acepta):
 Notas:
 - `seconds` por slide de carrusel: **4.0–12.0** (usá ~5–6).
 - Cada beat necesita `text` no vacío (el carrusel se consume en mudo).
+- **TODO carrusel sigue el formato AIDA.** `text` es el TÍTULO — corto, 2-5
+  palabras, mayúsculas ("UN GENIO ENCERRADO", no "Tu IA es un genio encerrado
+  en una caja"). `subtitle` es la frase que lo explica — ahí va la oración
+  completa, en texto más chico. Cada beat declara `"aida"`: `"atencion"` |
+  `"interes"` | `"deseo"` | `"accion"`. Slide 1 es SIEMPRE `atencion` (el
+  hook disruptivo — no enseña nada todavía), el último slide es SIEMPRE
+  `accion` (el CTA). Los del medio son `interes`/`deseo`, en el orden que
+  tenga sentido narrativo — no hace falta una cantidad fija de cada uno.
+  `script.validate()` lo hace cumplir en código
+  (`factory/script.py::_validate_carrusel_aida`) — **una vez que declarás
+  `aida` en un beat, tenés que declararlo en TODOS los beats del guion**, o
+  el build lo rechaza. Ver `examples/mcp-carrusel.json` como referencia
+  completa del patrón.
 - **Cada beat necesita `scene` no vacío.** `scene` es la descripción del fondo
   full-frame de ese slide (en inglés, SIN texto ni letras — el título va
   encima en Remotion). Sin `scene`, el pipeline (`factory/pipeline.py:400`) no
   genera el fondo de marca y el slide cae a la imagen aislada del `assets`
   sobre el papel liso — eso fue el bug del 2026-07-18: 8 slides sin `scene` →
   8 fondos genéricos en vez del look de marca. No lo repitas.
+- **Evitá describir objetos con texto real dentro** (una boleta con nombres
+  de candidatos, un periódico con titular, una pantalla con UI) en `scene`
+  o `assets[].description` — el modelo de imagen tiende a renderizar ese
+  texto de forma ilegible/en inglés sin importar el estilo pedido
+  (verificado 2026-07-18). Describí el objeto sin su texto ("a stack of
+  blank ballots", no "a ballot showing candidate names").
 - `assets[].description` va en inglés (es prompt de imagen); terminá en algo
   tipo "editorial cutout" — el estilo exacto (grabado, dorado, minimalista) lo
   pone la `template`, no hace falta describirlo acá.
@@ -160,9 +179,11 @@ sigas de largo. Esperá respuesta real de Alexander.
 Ya viven en `script.validate()` — la skill NO las reimplementa ni re-valida por
 su cuenta; **genera guiones que las cumplen de entrada** para no perder ciclos:
 
-- **CARRUSEL**: slide 1 = hook disruptivo que **NO enseña** (sin "CÓMO", sin
-  "1.", sin entregar el valor). Slides intermedias = valor autónomo + tease. Slide
-  final = CTA sin tease. **6–10 slides.**
+- **CARRUSEL, formato AIDA obligatorio**: slide 1 = `aida: "atencion"`, hook
+  disruptivo que **NO enseña** (sin "CÓMO", sin "1.", sin entregar el valor).
+  Slides intermedias = `aida: "interes"`/`"deseo"`, valor autónomo + tease.
+  Slide final = `aida: "accion"`, CTA sin tease. **6–10 slides.** `text` =
+  título corto, `subtitle` = la frase completa (ver PASO 2, nota de AIDA).
 - **Número hiperespecífico**: al menos uno real. **Si no lo podés verificar, no
   lo inventes** — el brief escribe "dato por verificar" en vez de fabricar una
   cifra. Un número inventado en un brief se vuelve un número inventado publicado.

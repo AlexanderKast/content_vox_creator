@@ -55,6 +55,7 @@ def load_script(path: Path) -> Script:
             index=item["index"],
             text=item["text"],
             subtitle=item.get("subtitle", ""),
+            aida=item.get("aida", ""),
             kicker=item.get("kicker", ""),
             badge=item.get("badge", ""),
             scene=item.get("scene", ""),

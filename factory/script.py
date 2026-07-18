@@ -57,8 +57,17 @@ class Beat:
     """One scene (VIDEO) or one slide (CARRUSEL)."""
 
     index: int
-    text: str                  # on-screen TITLE — mandatory in carrusel, sound is off
-    subtitle: str = ""         # short on-screen subtitle/kicker under the title
+    text: str                  # on-screen TITLE — short (2-5 words), mandatory in
+                                # carrusel, sound is off. NOT a full sentence — the
+                                # sentence goes in `subtitle`.
+    subtitle: str = ""         # short on-screen description under the title —
+                                # the sentence that explains `text`
+    # AIDA phase this beat plays in a carrusel's arc: "atencion" | "interes" |
+    # "deseo" | "accion". Empty = not declared (old scripts, or VIDEO — AIDA is
+    # a carrusel structure, not enforced there). Once ANY beat in a script
+    # declares it, validate() holds the whole carrusel to the pattern: beat 1
+    # is "atencion" (the disruptive hook), the last beat is "accion" (the CTA).
+    aida: str = ""
     kicker: str = ""           # small black top label ("ULTIMA HORA", section)
     badge: str = ""            # orange sticker callout ("$$$", "-50%", "RECORD")
     scene: str = ""            # full-frame themed background illustration (bakery,
@@ -463,6 +472,47 @@ def validate_gating(script: Script) -> list[str]:
     return errors
 
 
+_AIDA_PHASES = {"atencion", "interes", "deseo", "accion"}
+
+
+def _validate_carrusel_aida(script: Script) -> list[str]:
+    """Every carrusel is an AIDA arc: slide 1 grabs attention with a
+    disruptive hook, the last slide is the call to action — everything
+    between builds interest and desire. This only bites once a script opts
+    in by declaring `aida` on at least one beat (old scripts, and any beat
+    that skips it, are silently exempt) — but once one beat declares it,
+    every beat must, and the two structural anchors are non-negotiable."""
+    declared = [b for b in script.beats if b.aida.strip()]
+    if not declared:
+        return []
+
+    errors: list[str] = []
+    for beat in script.beats:
+        phase = beat.aida.strip()
+        if not phase:
+            errors.append(
+                f"Slide {beat.index} no declara \"aida\" pero otros slides de este "
+                "carrusel si — o todos lo declaran o ninguno."
+            )
+        elif phase not in _AIDA_PHASES:
+            errors.append(
+                f"Slide {beat.index}: aida=\"{phase}\" invalido. Usa uno de: "
+                f"{', '.join(sorted(_AIDA_PHASES))}."
+            )
+
+    if script.beats and script.beats[0].aida.strip() not in ("", "atencion"):
+        errors.append(
+            f"Slide 1 debe ser aida=\"atencion\" (el hook disruptivo) — es "
+            f"\"{script.beats[0].aida}\"."
+        )
+    if script.beats and script.beats[-1].aida.strip() not in ("", "accion"):
+        errors.append(
+            f"El ultimo slide debe ser aida=\"accion\" (el CTA) — es "
+            f"\"{script.beats[-1].aida}\"."
+        )
+    return errors
+
+
 def validate(script: Script) -> list[str]:
     """Return blocking errors. Empty list means the script may proceed."""
     errors: list[str] = []
@@ -487,6 +537,7 @@ def validate(script: Script) -> list[str]:
                     f"Slide {beat.index} is {beat.seconds}s. Use 4-12s per slide "
                     "(con voz, ~10s permite una frase completa por slide)."
                 )
+        errors.extend(_validate_carrusel_aida(script))
     else:
         # Generic duration bound applies ONLY to formula-less scripts. When a
         # formula is declared, ITS range governs (see validate_formula) and this

@@ -72,6 +72,13 @@ Mismo par de archivos que `content-vox-brief` (`briefs/<slug>.brief.md` +
 `examples/<slug>.json`), MISMO schema JSON (`factory.cli.load_script`), con
 estas diferencias:
 
+- **Formato AIDA, igual que `content-vox-brief`** (esto NO es específico de
+  noticias — es la regla de TODO carrusel): `text` = título corto (2-5
+  palabras), `subtitle` = la frase completa. Cada beat declara `"aida":
+  "atencion"|"interes"|"deseo"|"accion"` — slide 1 SIEMPRE `atencion` (hook
+  disruptivo), último slide SIEMPRE `accion` (CTA). `script.validate()` lo
+  exige en código apenas un beat declara `aida` — o van todos o ninguno.
+  Ver `examples/mcp-carrusel.json` o `examples/colombia-petro-posesion.json`.
 - **`chapters`**: en el JSON top-level cuando > 1. Ejemplo:
   `"chapters": 3` para un video de ~90s en 3 partes.
 - **Marcador de capítulo en pantalla**: el primer beat de cada capítulo lleva
@@ -166,7 +173,8 @@ A diferencia de `content-vox-brief`, **ninguna** regla de `validate_formula`/
 siempre es `None`). Las que SÍ aplican, siempre:
 
 - **Hook no vacío**, CTA no vacío (regla genérica de `validate()`).
-- **Carrusel**: 6-10 slides, cada uno con `text` no vacío.
+- **Carrusel**: 6-10 slides, cada uno con `text` no vacío, formato AIDA
+  (ver PASO 2) — slide 1 `atencion`, último `accion`.
 - **Figura pública → `is_real_entity` + `is_public_figure` juntos**, siempre
   (código, ver PASO 2).
 - **El nombre SÍ va en `description` cuando `is_public_figure: true`** (es
