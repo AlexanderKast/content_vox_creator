@@ -75,12 +75,16 @@ Mismo par de archivos que `content-vox-brief` (`briefs/<slug>.brief.md` +
 estas diferencias:
 
 - **Formato AIDA, igual que `content-vox-brief`** (esto NO es específico de
-  noticias — es la regla de TODO carrusel): `text` = título corto (2-5
-  palabras), `subtitle` = la frase completa. Cada beat declara `"aida":
+  noticias — es la regla de TODO carrusel): `text` = TÍTULO, siempre frase
+  completa (la atracción/el gancho), `subtitle` = DESCRIPCIÓN, el porqué o
+  para qué (interés+deseo) — nunca el título repetido en chico. La acción
+  (CTA) va aparte, en su propio slide final, nunca mezclada con
+  título+descripción de un slide intermedio. Cada beat declara `"aida":
   "atencion"|"interes"|"deseo"|"accion"` — slide 1 SIEMPRE `atencion` (hook
   disruptivo), último slide SIEMPRE `accion` (CTA). `script.validate()` lo
   exige en código apenas un beat declara `aida` — o van todos o ninguno.
-  Ver `examples/mcp-carrusel.json` o `examples/colombia-petro-posesion.json`.
+  Ver `examples/colombia-petro-posesion.json` (`examples/mcp-carrusel.json`
+  es un ejemplo VIEJO con título corto — desactualizado, no lo copies).
 - **`chapters`**: en el JSON top-level cuando > 1. Ejemplo:
   `"chapters": 3` para un video de ~90s en 3 partes.
 - **Marcador de capítulo en pantalla**: el primer beat de cada capítulo lleva
@@ -96,6 +100,14 @@ estas diferencias:
   la voz se corta si el slide termina antes (regla general: ~2.5-3
   palabras por segundo en español hablado; una narración de 15 palabras
   necesita ~6s, no 4s).
+  **`narration` NUNCA es `text`+`subtitle` leído en voz alta.** Es su propio
+  guion, narrativo, tipo storytelling — cuenta la historia con voz propia,
+  fluye de un slide al siguiente como un relato continuo (no una lectura de
+  titulares). `text`/`subtitle` son lo que se LEE en pantalla; `narration`
+  es lo que se ESCUCHA — dos textos distintos, aunque cuenten lo mismo.
+- **Voz de `orgullosamentepaisa`**: `W1hAcdh0RNsPYUA7fkJh` (ya en
+  `brand.json` — no la cambies sin que Alexander lo pida). Todo contenido de
+  esta marca usa esta voz, siempre.
 - **`formula`**: nunca lo declares. Este contenido no pasa por F1-F5 (esas
   reglas son de marca personal — credenciales, prueba propia, CTA triple — no
   aplican a una noticia objetiva).

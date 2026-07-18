@@ -57,16 +57,18 @@ class Beat:
     """One scene (VIDEO) or one slide (CARRUSEL)."""
 
     index: int
-    text: str                  # on-screen TITLE — short (2-5 words), mandatory in
-                                # carrusel, sound is off. NOT a full sentence — the
-                                # sentence goes in `subtitle`.
-    subtitle: str = ""         # short on-screen description under the title —
-                                # the sentence that explains `text`
+    text: str                  # on-screen TITLE — ALWAYS a complete sentence
+                                # (the hook/atencion, not a 2-5 word label),
+                                # mandatory in carrusel, sound is off.
+    subtitle: str = ""         # on-screen description under the title — the
+                                # why/for-what (interes+deseo), NOT a repeat
+                                # of the title in smaller words.
     # AIDA phase this beat plays in a carrusel's arc: "atencion" | "interes" |
     # "deseo" | "accion". Empty = not declared (old scripts, or VIDEO — AIDA is
     # a carrusel structure, not enforced there). Once ANY beat in a script
     # declares it, validate() holds the whole carrusel to the pattern: beat 1
-    # is "atencion" (the disruptive hook), the last beat is "accion" (the CTA).
+    # is "atencion" (the disruptive hook), the last beat is "accion" (the CTA,
+    # its own slide — never folded into a title+subtitle beat).
     aida: str = ""
     kicker: str = ""           # small black top label ("ULTIMA HORA", section)
     badge: str = ""            # orange sticker callout ("$$$", "-50%", "RECORD")

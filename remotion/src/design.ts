@@ -97,10 +97,28 @@ export const TYPE = {
   size: {
     hook: 120, // the opener — biggest
     headline: 104, // standard video beat text
-    slide: 78, // carrusel slide text
+    slide: 78, // carrusel slide text, SHORT titles only — see fitTitleSize
     counter: 40, // slide counter
   },
 } as const;
+
+// Carrusel titles are now ALWAYS a full sentence (2026-07-18 — the AIDA
+// rewrite: `text` is the hook itself, not a 2-5 word label). TYPE.size.slide
+// (78) was tuned for a short label; a full sentence at that size wraps to
+// 3-4 lines and either collides with the subtitle/cutout below it or runs
+// off frame. Scale the title DOWN as the sentence gets longer instead of
+// hardcoding one size for every length. Bucketed on word count (a proxy for
+// line count at ~4-5 words/line at this weight), not character count — two
+// short words wrap differently than one long compound word, but word count
+// tracks perceived length well enough for a scale bucket, not pixel-perfect
+// layout.
+export function fitTitleSize(text: string, base: number = TYPE.size.slide): number {
+  const words = text.trim().split(/\s+/).length;
+  if (words <= 4) return base;
+  if (words <= 7) return Math.round(base * 0.78);
+  if (words <= 10) return Math.round(base * 0.62);
+  return Math.round(base * 0.52);
+}
 
 // ---------------------------------------------------------------------------
 // Safe areas.

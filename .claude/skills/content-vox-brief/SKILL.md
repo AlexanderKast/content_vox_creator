@@ -84,7 +84,7 @@ Estructura (campos que `factory.cli.load_script` acepta):
     "lead_magnet_path": "assets/lead-magnets/<archivo>.md"
   },
   "beats": [
-    { "index": 1, "aida": "atencion", "text": "TITULO CORTO", "subtitle": "La frase que lo explica.", "seconds": 6,
+    { "index": 1, "aida": "atencion", "text": "Tu IA es un genio encerrado en una caja.", "subtitle": "No toca tu calendario, tu inbox, ni tu CRM — sabe todo y no ejecuta nada.", "seconds": 6,
       "scene": "full-frame backdrop description, no text",
       "assets": [{ "id": "x", "description": "... editorial cutout" }] }
   ]
@@ -93,14 +93,18 @@ Estructura (campos que `factory.cli.load_script` acepta):
 Notas:
 - `seconds` por slide de carrusel: **4.0–12.0** (usá ~5–6).
 - Cada beat necesita `text` no vacío (el carrusel se consume en mudo).
-- **TODO carrusel sigue el formato AIDA.** `text` es el TÍTULO — corto, 2-5
-  palabras, mayúsculas ("UN GENIO ENCERRADO", no "Tu IA es un genio encerrado
-  en una caja"). `subtitle` es la frase que lo explica — ahí va la oración
-  completa, en texto más chico. Cada beat declara `"aida"`: `"atencion"` |
-  `"interes"` | `"deseo"` | `"accion"`. Slide 1 es SIEMPRE `atencion` (el
-  hook disruptivo — no enseña nada todavía), el último slide es SIEMPRE
-  `accion` (el CTA). Los del medio son `interes`/`deseo`, en el orden que
-  tenga sentido narrativo — no hace falta una cantidad fija de cada uno.
+- **TODO carrusel sigue el formato AIDA — corregido 2026-07-18.** `text` es
+  el TÍTULO y es **SIEMPRE una frase completa** ("Tu IA es un genio encerrado
+  en una caja.", NO "UN GENIO ENCERRADO"). Es la ATRACCIÓN — el gancho de ese
+  slide. `subtitle` es la DESCRIPCIÓN: el porqué o el para qué, el
+  INTERÉS+DESEO detrás del título — por qué le importa a quien lee, qué gana.
+  La ACCIÓN va aparte, en su propio slide (el CTA final) — no se mezcla
+  título+descripción con acción en el mismo slide intermedio.
+  Cada beat declara `"aida"`: `"atencion"` | `"interes"` | `"deseo"` |
+  `"accion"`. Slide 1 es SIEMPRE `atencion` (el hook disruptivo — no enseña
+  nada todavía), el último slide es SIEMPRE `accion` (el CTA, aparte, su
+  propio slide). Los del medio son `interes`/`deseo`, en el orden que tenga
+  sentido narrativo — no hace falta una cantidad fija de cada uno.
   `script.validate()` lo hace cumplir en código
   (`factory/script.py::_validate_carrusel_aida`) — **una vez que declarás
   `aida` en un beat, tenés que declararlo en TODOS los beats del guion**, o
@@ -183,7 +187,8 @@ su cuenta; **genera guiones que las cumplen de entrada** para no perder ciclos:
   disruptivo que **NO enseña** (sin "CÓMO", sin "1.", sin entregar el valor).
   Slides intermedias = `aida: "interes"`/`"deseo"`, valor autónomo + tease.
   Slide final = `aida: "accion"`, CTA sin tease. **6–10 slides.** `text` =
-  título corto, `subtitle` = la frase completa (ver PASO 2, nota de AIDA).
+  frase completa (el gancho), `subtitle` = el porqué/para qué (ver PASO 2,
+  nota de AIDA).
 - **Número hiperespecífico**: al menos uno real. **Si no lo podés verificar, no
   lo inventes** — el brief escribe "dato por verificar" en vez de fabricar una
   cifra. Un número inventado en un brief se vuelve un número inventado publicado.

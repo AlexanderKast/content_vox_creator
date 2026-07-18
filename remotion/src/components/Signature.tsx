@@ -10,9 +10,14 @@ import { TYPE, roles } from "../design";
  */
 export const Signature: React.FC<{
   tokens: BrandTokens;
+  // Pass exactly one of top/bottom — reference carousels (2026-07-18 batch)
+  // put the handle in the top band with the rest of the account chrome
+  // (SlideCounter, SeriesKicker), not bottom-left; CarouselSlide uses `top`
+  // now. BoxVideo still passes `bottom` — video has no top UI band to match.
+  top?: number;
   bottom?: number;
   left?: number;
-}> = ({ tokens, bottom = 8, left = 8 }) => {
+}> = ({ tokens, top, bottom, left = 8 }) => {
   const { ink, accent } = roles(tokens);
   if (!tokens.handle) return null;
 
@@ -20,7 +25,7 @@ export const Signature: React.FC<{
     <div
       style={{
         position: "absolute",
-        bottom: `${bottom}%`,
+        ...(top !== undefined ? { top: `${top}%` } : { bottom: `${bottom ?? 8}%` }),
         left: `${left}%`,
         display: "flex",
         alignItems: "center",

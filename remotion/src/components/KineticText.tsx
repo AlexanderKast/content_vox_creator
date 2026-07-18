@@ -47,15 +47,22 @@ export const KineticText: React.FC<{
   loopFrames?: number;
   impact?: boolean;
   stagger?: number;
+  // True when this text sits over a photographic backdrop (beat.scene) —
+  // a flat brand-ink color reads fine over a flat surface color but loses
+  // to a busy photo. Switches to near-white fill + a black outline/shadow,
+  // which stays legible over ANY image tone (verified 2026-07-18: plain
+  // dark ink on a dim office photo was unreadable).
+  legibleOverPhoto?: boolean;
 }> = ({
   text, tokens, delay = 0, size = TYPE.size.headline, bottom = 18,
   weight = TYPE.weight.black, wordTimings, sequenceFrom = 0, loopFrames,
-  impact = false, stagger = 2,
+  impact = false, stagger = 2, legibleOverPhoto = false,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const words = text.split(" ");
-  const { ink, accent } = roles(tokens);
+  const { ink: brandInk, accent } = roles(tokens);
+  const ink = legibleOverPhoto ? "#FFFFFF" : brandInk;
   const looping = !!loopFrames && loopFrames > 0;
 
   const useRealTimings = !!wordTimings && wordTimings.length === words.length;
@@ -121,7 +128,13 @@ export const KineticText: React.FC<{
               transformOrigin: "center bottom",
               opacity: enter > 0.02 ? 1 : 0,
               letterSpacing: TYPE.tracking,
-              textShadow: emphasized ? ELEVATION.glowText(accent) : "none",
+              textShadow: legibleOverPhoto
+                ? "0 3px 10px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.9)"
+                : emphasized
+                  ? ELEVATION.glowText(accent)
+                  : "none",
+              WebkitTextStroke: legibleOverPhoto ? "3px #000000" : undefined,
+              paintOrder: legibleOverPhoto ? "stroke fill" : undefined,
             }}
           >
             {word}

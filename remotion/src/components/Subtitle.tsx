@@ -18,10 +18,13 @@ export const Subtitle: React.FC<{
   size?: number;
   bottom?: number;
   loopFrames?: number;
-}> = ({ text, tokens, delay = 6, size = 40, bottom = 26, loopFrames }) => {
+  // See KineticText's prop of the same name — same reason, same fix.
+  legibleOverPhoto?: boolean;
+}> = ({ text, tokens, delay = 6, size = 40, bottom = 26, loopFrames, legibleOverPhoto = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { ink } = roles(tokens);
+  const { ink: brandInk } = roles(tokens);
+  const ink = legibleOverPhoto ? "#FFFFFF" : brandInk;
   const looping = !!loopFrames && loopFrames > 0;
 
   const enter = looping
@@ -53,6 +56,9 @@ export const Subtitle: React.FC<{
           color: ink,
           textTransform: "uppercase",
           letterSpacing: "0.04em",
+          textShadow: legibleOverPhoto ? "0 2px 8px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.9)" : "none",
+          WebkitTextStroke: legibleOverPhoto ? "1.5px #000000" : undefined,
+          paintOrder: legibleOverPhoto ? "stroke fill" : undefined,
         }}
       >
         {text}
