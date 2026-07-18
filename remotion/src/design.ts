@@ -128,6 +128,13 @@ export const PLACEMENTS = [
   { x: 4, y: 24, scale: 0.58, rotate: 8 },
 ] as const;
 
+// A real public figure (content-vox-news, BeatAsset.isPublicFigure) never
+// gets a close-up — smallest scale of the set, centered, no PLACEMENTS
+// rotation. The eyes are already black-barred by factory.redact before the
+// image ever reaches Remotion; this keeps the figure small on top of that,
+// never the dominant element of the frame.
+export const DISTANT_PLACEMENT = { x: 0, y: 10, scale: 0.4, rotate: 0 } as const;
+
 // Ken Burns pan directions (px), one per beat, cycled.
 export const KEN_BURNS = [
   { x: -26, y: 10 },

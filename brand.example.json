@@ -11,6 +11,7 @@
     },
     "dominant": "gold",
     "aesthetic": "warm bronze, high contrast, oversized type",
+    "template": "engraving-orange",
     "grain": 0.12,
     "voiceId": "PEGA_AQUI_TU_VOICE_ID_DE_ELEVENLABS",
     "characterRef": null,

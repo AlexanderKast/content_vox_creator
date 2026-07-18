@@ -19,13 +19,22 @@ import threading
 from dataclasses import asdict
 from pathlib import Path
 
-from . import align, cache, caption, chroma, config, cost, db, gating, hooks, rhythm
+from . import align, cache, caption, chroma, config, cost, db, gating, hooks, redact, rhythm
 from .providers.character_magnific import MagnificCharacter
 from .providers.images_wavespeed import WaveSpeedImages
 from .providers.photos_apify import ApifyPhotos
 from .providers.text_llm import MistralText
 from .providers.voice_elevenlabs import ElevenLabsVoice
-from .router import DEFAULT_MODELS, BACKDROP_PROMPT, Asset, Tier, build_prompt, plan
+from .router import (
+    DEFAULT_MODELS,
+    DEFAULT_TEMPLATE,
+    TEMPLATE_NAMES,
+    Asset,
+    Tier,
+    backdrop_prompt,
+    build_prompt,
+    plan,
+)
 from .script import DIMENSIONS, FPS, Mode, Script, assert_valid
 
 VOICE_MODEL = "elevenlabs/multilingual-v2"
@@ -188,11 +197,15 @@ class Factory:
 
     # -- asset production -------------------------------------------------
 
-    def _produce_backdrop(self, job_id: str, description: str, width: int, height: int) -> Path | None:
+    def _produce_backdrop(
+        self, job_id: str, description: str, width: int, height: int, template: str
+    ) -> Path | None:
         """A full-frame themed backdrop (the beat's 'world', from beat.scene).
         Unlike a cutout it is NOT chroma-keyed — it fills the frame and text sits
-        over it. Distinct from Tier.SCENE. Cached by (model, prompt, size)."""
-        prompt = BACKDROP_PROMPT.format(description=description)
+        over it. Distinct from Tier.SCENE. Cached by (model, prompt, size) — the
+        template is baked into the prompt text, so switching templates never
+        serves a stale cached image under a new look."""
+        prompt = backdrop_prompt(description, template)
         key = cache.content_hash(model=BACKDROP_MODEL, prompt=prompt, width=width, height=height, kind="backdrop")
         hit = cache.get(key, "png")
         if hit:
@@ -207,9 +220,9 @@ class Factory:
         return path
 
     def _produce_image(self, job_id: str, asset: Asset, tier: Tier,
-                       width: int, height: int, reference: str | None) -> Path:
+                       width: int, height: int, reference: str | None, template: str) -> Path:
         model = DEFAULT_MODELS[tier]
-        prompt = build_prompt(asset, tier)
+        prompt = build_prompt(asset, tier, template)
         # chroma.CHROMA_VERSION is part of the key so improving the chroma
         # algorithm invalidates old cutouts instead of leaving them stale.
         key = cache.content_hash(
@@ -248,8 +261,13 @@ class Factory:
         return path
 
     def _produce_photo(self, job_id: str, asset: Asset) -> Path | None:
-        key = cache.content_hash(source="apify", query=asset.description)
-        hit = cache.get(key, "jpg")
+        # is_public_figure is part of the key: the SAME query must never
+        # serve a cached un-redacted photo once an asset asks for redaction
+        # (or vice versa) — the two are different artifacts, not a cache hit.
+        key = cache.content_hash(
+            source="apify", query=asset.description, public_figure=asset.is_public_figure
+        )
+        hit = cache.get(key, "png" if asset.is_public_figure else "jpg")
         if hit:
             return hit
 
@@ -261,7 +279,14 @@ class Factory:
             return None  # graceful degradation: the build continues without it
 
         data = provider.download(urls[0])
-        path = cache.put(key, "jpg", data)
+        ext = "jpg"
+        if asset.is_public_figure:
+            # A real, named public figure — never shipped as a clean,
+            # identifiable close-up. See factory.redact for what this does
+            # and why it degrades to over-covering rather than skipping.
+            data = redact.black_bar_eyes(data)
+            ext = "png"
+        path = cache.put(key, ext, data)
         db.record_asset(
             self.conn, key, job_id, Tier.PHOTO.value, "apify/google-images",
             str(path), cost.photo_price(),
@@ -365,6 +390,17 @@ class Factory:
             )
         tokens = brand_tokens[script.brand]
 
+        # Template resolution order: script override -> brand default -> global
+        # default. Validated NOW, before estimate/spend, so a typo'd template
+        # name fails the brief instead of failing mid-build after real assets
+        # were already paid for.
+        template = script.template or tokens.get("template") or DEFAULT_TEMPLATE
+        if template not in TEMPLATE_NAMES:
+            raise RuntimeError(
+                f"Plantilla '{template}' no existe.\n"
+                f"Disponibles: {', '.join(TEMPLATE_NAMES)}"
+            )
+
         est = estimate(script, self.cfg)
         print(est.render())
         cost.enforce_budget(est, self.cfg.max_spend_per_run)
@@ -388,7 +424,7 @@ class Factory:
                     path = self._produce_photo(job_id, asset)
                 else:
                     reference = tokens.get("characterRef") if tier is Tier.CHARACTER else None
-                    path = self._produce_image(job_id, asset, tier, width, height, reference)
+                    path = self._produce_image(job_id, asset, tier, width, height, reference, template)
                 if path:
                     produced[asset.id] = _publish_for_remotion(path)
 
@@ -399,7 +435,7 @@ class Factory:
         for beat in script.beats:
             if beat.scene.strip():
                 try:
-                    p = self._produce_backdrop(job_id, beat.scene, width, height)
+                    p = self._produce_backdrop(job_id, beat.scene, width, height, template)
                     if p:
                         scene_by_beat[beat.index] = _publish_for_remotion(p)
                 except Exception as exc:  # noqa: BLE001 - degrade, never block
@@ -464,7 +500,10 @@ class Factory:
                 "stat": beat.stat,
                 "search": beat.search,
                 "seconds": beat.seconds,
-                "assets": [produced.get(a.id) for a in beat.assets if produced.get(a.id)],
+                "assets": [
+                    {"src": produced[a.id], "isPublicFigure": a.is_public_figure}
+                    for a in beat.assets if produced.get(a.id)
+                ],
                 "scene": scene_by_beat.get(beat.index),
                 "sfx": sfx_entries,
                 "sequenceFrom": cursor_frames,
@@ -476,6 +515,7 @@ class Factory:
             "jobId": job_id,
             "mode": script.mode.value,
             "brand": script.brand,
+            "template": template,
             "tokens": tokens,
             "width": width,
             "height": height,

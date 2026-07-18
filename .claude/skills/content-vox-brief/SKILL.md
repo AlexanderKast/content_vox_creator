@@ -58,13 +58,15 @@ El brief DEBE contener, en este orden:
    brief que solo muestra lo elegido es un resumen; lo útil es ver qué se
    descartó y por qué.
 3. **Estructura slide por slide en TABLA**: `# | text (en pantalla) | subtitle |
-   tease/nota`. Una fila por slide.
+   scene (fondo) | tease/nota`. Una fila por slide.
 4. **CTA + gating**: la pregunta personalizada (nunca genérica).
 5. **Lead magnet**: cuál haría falta si hay gating, y si **existe en disco** o
    hay que crearlo. (Chequealo: `assets/lead-magnets/`.)
 6. **Costo estimado**: el número REAL de `estimate`, nunca inventado.
 7. **"Lo que este contenido NO hace"**: el alcance que se deja fuera a propósito.
-8. **Nota de honestidad de formato** cuando aplique (ver sección dedicada).
+8. **Plantilla visual usada** (`template`) — cuál y por qué (default de marca,
+   o la que Alexander pidió). Ver sección "Plantilla visual" más abajo.
+9. **Nota de honestidad de formato** cuando aplique (ver sección dedicada).
 
 **b) `examples/<slug>.json`** — el guion ejecutable, input real de `build`.
 Estructura (campos que `factory.cli.load_script` acepta):
@@ -72,6 +74,7 @@ Estructura (campos que `factory.cli.load_script` acepta):
 {
   "mode": "carrusel",
   "brand": "alexander",
+  "template": "dark-luxury-gold",
   "topic": "...",
   "hook": "...",
   "cta": "...",
@@ -82,6 +85,7 @@ Estructura (campos que `factory.cli.load_script` acepta):
   },
   "beats": [
     { "index": 1, "text": "...", "subtitle": "...", "seconds": 6,
+      "scene": "full-frame backdrop description, no text",
       "assets": [{ "id": "x", "description": "... editorial cutout" }] }
   ]
 }
@@ -89,10 +93,42 @@ Estructura (campos que `factory.cli.load_script` acepta):
 Notas:
 - `seconds` por slide de carrusel: **4.0–12.0** (usá ~5–6).
 - Cada beat necesita `text` no vacío (el carrusel se consume en mudo).
-- `assets[].description` va en inglés (es prompt de imagen). Terminá en
-  "editorial cutout" / estilo grabado para el look de la marca.
+- **Cada beat necesita `scene` no vacío.** `scene` es la descripción del fondo
+  full-frame de ese slide (en inglés, SIN texto ni letras — el título va
+  encima en Remotion). Sin `scene`, el pipeline (`factory/pipeline.py:400`) no
+  genera el fondo de marca y el slide cae a la imagen aislada del `assets`
+  sobre el papel liso — eso fue el bug del 2026-07-18: 8 slides sin `scene` →
+  8 fondos genéricos en vez del look de marca. No lo repitas.
+- `assets[].description` va en inglés (es prompt de imagen); terminá en algo
+  tipo "editorial cutout" — el estilo exacto (grabado, dorado, minimalista) lo
+  pone la `template`, no hace falta describirlo acá.
 - `gating` es opcional; si lo ponés, `lead_magnet_path` **debe existir en disco**
   o `validate()` rechaza el build.
+- `template` es opcional. Si no la ponés, se usa la de `brand.json` para esa
+  marca; si esa tampoco tiene, cae a `engraving-orange`. Ver sección siguiente.
+
+## Plantilla visual (`template`)
+
+Define el look de TODAS las imágenes del guion — cutouts, escenas y fondos a
+pantalla completa quedan todos en la misma familia visual (antes del fix del
+2026-07-18 el fondo usaba un look hardcodeado distinto al de los cutouts; ya
+no). Opciones (`factory/router.py`, `TEMPLATE_NAMES`):
+
+| template | look |
+|---|---|
+| `engraving-orange` | grabado vintage, tinta negra, acentos naranja-rojo, fondo papel crema — el clásico original |
+| `dark-luxury-gold` | grabado vintage, negro casi puro + dorado luminoso — el look "AI-luxury" |
+| `minimal-flat` | ilustración plana minimalista, sin grabado, dos tonos, moderna |
+| `vox-paper` | collage de papel recortado, bordes rasgados a mano, paleta editorial cálida (mostaza/óxido/verde azulado/crema) — el look "Vox explainer" |
+
+Cada marca en `brand.json` tiene un `template` default (revisalo antes de
+preguntar). Usá ese por defecto sin preguntar. Solo preguntá cuál usar si:
+- Alexander pide explícitamente "otro estilo" / "algo distinto" / nombra un look, o
+- es una marca sin `template` configurado en `brand.json`.
+
+Si preguntás, mencioná las 3 opciones de la tabla en una línea, no description
+larga. Guardá la elegida en el JSON como `"template"` y mencionala en el brief
+(ver PASO 2a, punto 8 más abajo).
 
 ### PASO 3 — Validar ANTES de mostrar
 Corré (usá `python` en Windows, `python3` en mac/linux):

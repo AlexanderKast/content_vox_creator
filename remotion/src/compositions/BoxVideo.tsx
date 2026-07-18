@@ -8,7 +8,7 @@ import { SceneBackground } from "../components/SceneBackground";
 import { SeriesKicker } from "../components/SeriesKicker";
 import { Signature } from "../components/Signature";
 import { Underline } from "../components/Underline";
-import { MOTION, PLACEMENTS, TYPE } from "../design";
+import { DISTANT_PLACEMENT, MOTION, PLACEMENTS, TYPE } from "../design";
 import type { Manifest } from "../types";
 
 /**
@@ -78,15 +78,19 @@ export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
                 index={beatIndex}
                 opener={beatIndex === 0}
               >
-                {beat.assets.map((src, assetIndex) => {
+                {beat.assets.map((asset, assetIndex) => {
                   // Rotate the placement slot by the beat too, so the same
                   // asset count lands in different spots from beat to beat —
-                  // never the same layout twice in a row.
-                  const place = PLACEMENTS[(assetIndex + beatIndex) % PLACEMENTS.length];
+                  // never the same layout twice in a row. A public figure
+                  // skips that rotation entirely — always DISTANT_PLACEMENT,
+                  // never a close-up.
+                  const place = asset.isPublicFigure
+                    ? DISTANT_PLACEMENT
+                    : PLACEMENTS[(assetIndex + beatIndex) % PLACEMENTS.length];
                   return (
                     <Cutout
-                      key={src}
-                      src={staticFile(src)}
+                      key={asset.src}
+                      src={staticFile(asset.src)}
                       delay={assetIndex * MOTION.frames.assetStagger}
                       x={place.x}
                       y={place.y}

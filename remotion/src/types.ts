@@ -15,6 +15,15 @@ export type BeatSfx = {
   frame: number;
 };
 
+export type BeatAsset = {
+  src: string;
+  // A named, real public figure (content-vox-news). The pipeline already
+  // black-bars the eyes (factory.redact) before this ever reaches Remotion —
+  // this flag exists so Cutout also renders it at its smallest, most distant
+  // placement, never a close-up.
+  isPublicFigure: boolean;
+};
+
 export type WordTiming = {
   word: string;
   startFrame: number;
@@ -36,7 +45,7 @@ export type Beat = {
   // Full-frame themed scene background for this beat, or null → cream paper.
   scene: string | null;
   seconds: number;
-  assets: string[];
+  assets: BeatAsset[];
   // One entry per SFX cue this beat triggers (cutout entrance -> pop, beat
   // cut -> whoosh, underline draw -> marker, remate/key-number -> impact).
   sfx: BeatSfx[];

@@ -72,17 +72,20 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           transform: `scale(${breathe})`,
         }}
       >
-        {/* Only float a cutout when there's no full scene behind. */}
+        {/* Only float a cutout when there's no full scene behind. A public
+            figure (content-vox-news) never gets the size-0.56 hero slot or
+            centered rotation-free treatment — smallest scale, dead center,
+            no rotation, regardless of index. */}
         {!beat.scene &&
-          beat.assets.map((src, assetIndex) => (
+          beat.assets.map((asset, assetIndex) => (
             <Cutout
-              key={src}
-              src={staticFile(src)}
+              key={asset.src}
+              src={staticFile(asset.src)}
               delay={assetIndex * 3}
               y={-32}
-              scale={assetIndex === 0 ? 0.56 : 0.4}
-              x={assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
-              rotate={assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
+              scale={asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4}
+              x={asset.isPublicFigure ? 0 : assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
+              rotate={asset.isPublicFigure ? 0 : assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
               index={assetIndex}
               loopFrames={durationInFrames}
             />

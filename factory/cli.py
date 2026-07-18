@@ -71,6 +71,7 @@ def load_script(path: Path) -> Script:
                     is_recurring_character=asset.get("is_recurring_character", False),
                     needs_text_in_image=asset.get("needs_text_in_image", False),
                     is_complex_composition=asset.get("is_complex_composition", False),
+                    is_public_figure=asset.get("is_public_figure", False),
                 )
                 for asset in item.get("assets", [])
             ],
@@ -114,6 +115,11 @@ def load_script(path: Path) -> Script:
         founder_name=raw.get("founder_name", profile.get("founderName")),
         hashtags=tuple(raw.get("hashtags", profile.get("hashtags", []))),
         signature=raw.get("signature", profile.get("signature")),
+        # Script-level "template" wins; otherwise the brand's own default
+        # (brand.json) applies — final fallback to router.DEFAULT_TEMPLATE
+        # happens in Factory.build, not here.
+        template=raw.get("template") or profile.get("template"),
+        chapters=raw.get("chapters", 1),
     )
 
 
@@ -161,6 +167,12 @@ def _cmd_setup(args: argparse.Namespace) -> int:
     voice_id = _ask("  Voice ID de ElevenLabs")
     character_ref = _ask("  Character ID de Magnific (si usas personaje fijo)")
 
+    print("\nPlantilla visual (el estilo de TODAS las imagenes generadas):")
+    print("  engraving-orange  — grabado vintage, acentos naranja, fondo claro")
+    print("  dark-luxury-gold  — grabado vintage, negro y dorado, look premium")
+    print("  minimal-flat      — ilustracion plana, sin grabado, moderna")
+    template = _ask("  Cual usar", "engraving-orange")
+
     print("\nReglas de tus guiones (opcional, se pueden dejar vacias):")
     credentials = _ask_list("  Tu experiencia EXACTA (ej. 5 años en marketing)")
     proof = _ask_list("  Tus marcas/clientes que sirven de prueba")
@@ -174,6 +186,7 @@ def _cmd_setup(args: argparse.Namespace) -> int:
         "colors": {"black": "#050505", "gold": accent, "paper": paper, "white": white},
         "dominant": "gold",
         "aesthetic": "custom",
+        "template": template,
         "grain": 0.12,
         "voiceId": voice_id or None,
         "characterRef": character_ref or None,

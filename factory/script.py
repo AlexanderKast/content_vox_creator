@@ -120,6 +120,21 @@ class Script:
     hashtags: tuple[str, ...] = ()      # brand hashtags for the caption
     signature: str | None = None        # caption sign-off line
 
+    # Visual template (factory.router.TEMPLATE_NAMES) — e.g. "dark-luxury-gold".
+    # None means "use the brand's default from brand.json, or the global
+    # default" — resolved in Factory.build, not here (this class doesn't read
+    # brand.json).
+    template: str | None = None
+
+    # Number of narrative chapters this VIDEO covers (content-vox-news: a
+    # coherent multi-part story, ~30s per chapter, up to 4). 1 (default) means
+    # "no chapter concept" and leaves the generic 45-90s duration bound
+    # (validate()) untouched — only chapters > 1 switches to the per-chapter
+    # bound. There's no dedicated field for it: a chapter boundary is just a
+    # beat whose `kicker` reads e.g. "CAPÍTULO 2 DE 3" (Beat.kicker already
+    # exists for this).
+    chapters: int = 1
+
     @property
     def narration_text(self) -> str:
         return " ".join(beat.narration.strip() for beat in self.beats if beat.narration).strip()
@@ -478,11 +493,18 @@ def validate(script: Script) -> list[str]:
         # generic rule must NOT stack on top — otherwise a valid F1 (75-100s per
         # formulas.py) gets killed by the narrower generic bound. The formula
         # owns its own timing; this is the fallback for scripts without one.
-        if script.formula is None and not 45 <= script.duration_seconds <= 90:
-            errors.append(
-                f"Video dura {script.duration_seconds}s. Debe estar entre 45 y "
-                "90s (ideal 60-75)."
-            )
+        if script.formula is None:
+            if script.chapters > 1:
+                # content-vox-news multi-chapter: ~30s/chapter, ±5s slack.
+                lo, hi = 25 * script.chapters, 35 * script.chapters
+            else:
+                lo, hi = 45, 90
+            if not lo <= script.duration_seconds <= hi:
+                errors.append(
+                    f"Video dura {script.duration_seconds}s. Debe estar entre "
+                    f"{lo} y {hi}s"
+                    + (f" ({script.chapters} capitulos x ~30s)." if script.chapters > 1 else " (ideal 60-75).")
+                )
         for beat in script.beats:
             if beat.seconds > 1.2 and not beat.assets and not beat.scene:
                 errors.append(
@@ -492,6 +514,14 @@ def validate(script: Script) -> list[str]:
 
     if not script.cta.strip():
         errors.append("Missing CTA.")
+
+    for asset in script.all_assets:
+        if asset.is_public_figure and not asset.is_real_entity:
+            errors.append(
+                f"Asset '{asset.id}' es is_public_figure sin is_real_entity. Una "
+                "figura publica SIEMPRE es una foto real (Tier.PHOTO), nunca "
+                "generada — declara is_real_entity=true tambien."
+            )
 
     errors.extend(validate_formula(script))
     if script.formula is not None:
