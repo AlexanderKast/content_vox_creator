@@ -24,7 +24,7 @@ import type { Manifest } from "../types";
  * Every layout/motion/type value comes from the design system (design.ts).
  */
 
-const MUSIC_VOLUME = 0.26; // bed under the voice — driving but not competing
+const MUSIC_VOLUME = 0.12; // low bed — the voiceover clearly leads
 
 export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
   const { tokens, fps, beats, voice, music, loop } = manifest;

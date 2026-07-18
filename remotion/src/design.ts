@@ -97,23 +97,12 @@ export const TYPE = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Spacing grid (8px base) + safe areas.
+// Safe areas.
 // ---------------------------------------------------------------------------
-
-const UNIT = 8;
-export const SPACE = {
-  unit: UNIT,
-  s: UNIT, // 8
-  m: UNIT * 2, // 16
-  l: UNIT * 3, // 24
-  xl: UNIT * 5, // 40
-} as const;
 
 export const SAFE = {
   // Carrusel: Instagram covers ~80px top / 200px bottom / ~40px sides.
   carousel: { top: 90, bottom: 210, side: 50 },
-  // Video text sits above TikTok/Reels bottom UI.
-  videoTextBottomPct: 18,
 } as const;
 
 // ---------------------------------------------------------------------------

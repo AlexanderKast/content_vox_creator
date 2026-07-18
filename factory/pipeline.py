@@ -411,7 +411,6 @@ class Factory:
         # it tells its whole story through on-screen title + subtitle text, so
         # it gets NO voice (just a music bed). See CarouselSlide.
         voice_path = None
-        beat_voice: dict[int, str] = {}
         if voice_id and script.mode is Mode.VIDEO:
             voice_path = self._produce_voice(job_id, script, voice_id)
 
@@ -464,16 +463,12 @@ class Factory:
                 "badge": beat.badge,
                 "stat": beat.stat,
                 "search": beat.search,
-                "narration": beat.narration,
                 "seconds": beat.seconds,
                 "assets": [produced.get(a.id) for a in beat.assets if produced.get(a.id)],
                 "scene": scene_by_beat.get(beat.index),
                 "sfx": sfx_entries,
                 "sequenceFrom": cursor_frames,
                 "wordTimings": word_timings_by_beat.get(beat.index),
-                # CARRUSEL: this slide's own voice clip (VIDEO uses the
-                # top-level continuous track instead).
-                "voice": beat_voice.get(beat.index),
             })
             cursor_frames += round(beat.seconds * FPS)
 

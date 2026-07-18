@@ -35,7 +35,6 @@ export type Beat = {
   search: string;
   // Full-frame themed scene background for this beat, or null → cream paper.
   scene: string | null;
-  narration: string;
   seconds: number;
   assets: string[];
   // One entry per SFX cue this beat triggers (cutout entrance -> pop, beat
@@ -49,9 +48,6 @@ export type Beat = {
   // didn't produce a full match for this beat's caption — components must
   // fall back to the estimated word-by-word reveal in that case.
   wordTimings: WordTiming[] | null;
-  // CARRUSEL only: this slide's own voice clip. VIDEO uses Manifest.voice
-  // (one continuous track) instead.
-  voice: string | null;
 };
 
 export type Manifest = {

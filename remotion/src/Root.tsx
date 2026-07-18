@@ -45,7 +45,7 @@ const FALLBACK: Manifest = {
   beats: [
     {
       index: 1, text: "SIN MANIFEST CARGADO", subtitle: "", kicker: "", badge: "", stat: "", search: "", scene: null,
-      narration: "", seconds: 3, assets: [], sfx: [], sequenceFrom: 0, wordTimings: null, voice: null,
+      seconds: 3, assets: [], sfx: [], sequenceFrom: 0, wordTimings: null,
     },
   ],
   loop: false,

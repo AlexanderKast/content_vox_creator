@@ -298,28 +298,6 @@ def validate_transversal(script: Script) -> list[str]:
     return errors
 
 
-def suggest_split(script: Script) -> list[str]:
-    """Non-blocking suggestions. \"Una idea por video\" can't be enforced as a
-    hard rule without real NLP, so this stays advisory: if the script reads
-    like it's carrying two separate promises, it says so instead of failing
-    the build."""
-    suggestions: list[str] = []
-    if script.formula is not Formula.F5:
-        promise_categories = {
-            "cobrar": bool(re.search(r"\bcobrar", script.full_text, re.IGNORECASE)),
-            "ahorrar": bool(re.search(r"\bahorr", script.full_text, re.IGNORECASE)),
-            "ganar": bool(re.search(r"\bganar", script.full_text, re.IGNORECASE)),
-            "vender": bool(re.search(r"\bvender", script.full_text, re.IGNORECASE)),
-        }
-        if sum(promise_categories.values()) >= 2:
-            suggestions.append(
-                "El guion toca mas de una promesa (" +
-                ", ".join(k for k, v in promise_categories.items() if v) +
-                "). Si son dos tesis distintas, considera partirlo en serie F5."
-            )
-    return suggestions
-
-
 def _validate_f1(script: Script) -> list[str]:
     errors: list[str] = []
 
