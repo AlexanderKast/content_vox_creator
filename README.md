@@ -124,6 +124,15 @@ Es una regla **económica** antes que estética — pero económica no es "el m�
 
 Verificado en `factory/cost.py`: 22 recortes en modelo premium = **$1.98**. Los mismos 22 bien ruteados = **$0.18** (con el escalón de calidad de arriba; $0.11 con el tier más barato de antes).
 
+**Dos cosas distintas se llamaban "scene" (desambiguado):**
+
+| Concepto | Qué es | Modelo | Precio |
+|---|---|---|---|
+| `Tier.SCENE` (router) | Composición compleja / texto-en-imagen, aislada sobre verde y recortada como cutout | `wavespeed/nano-banana-pro` | $0.140 |
+| **BACKDROP** (`beat.scene`) | Fondo a pantalla completa, NO recortado, el texto se apoya encima. El campo `beat.scene` del manifest alimenta ESTO | `wavespeed/nano-banana-2-fast` (`pipeline.BACKDROP_MODEL`) | $0.045 |
+
+El backdrop es el que más se usa (uno por beat con `scene`). Antes ambos se llamaban "scene" con 3x de diferencia de precio en la capa que decide el gasto — exactamente donde no puede haber ambigüedad.
+
 ### La asimetría voz/imagen
 
 El estimador la deja a la vista en cada corrida:

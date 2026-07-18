@@ -25,14 +25,16 @@ from .providers.images_wavespeed import WaveSpeedImages
 from .providers.photos_apify import ApifyPhotos
 from .providers.text_llm import MistralText
 from .providers.voice_elevenlabs import ElevenLabsVoice
-from .router import DEFAULT_MODELS, SCENE_FULL_PROMPT, Asset, Tier, build_prompt, plan
+from .router import DEFAULT_MODELS, BACKDROP_PROMPT, Asset, Tier, build_prompt, plan
 from .script import DIMENSIONS, FPS, Mode, Script, assert_valid
 
 VOICE_MODEL = "elevenlabs/multilingual-v2"
-# Full-frame themed scene backgrounds. A mid model: good enough composition for
-# a background that text sits over, without the premium per-image cost of the
-# character/scene tier (these run once per beat that declares a scene).
-SCENE_MODEL = "wavespeed/nano-banana-2-fast"
+# Full-frame themed BACKDROP (the beat's `scene` field). A mid model: good enough
+# composition for a background that text sits over, without the premium per-image
+# cost of the character/Tier.SCENE tier (these run once per beat that declares a
+# backdrop). Distinct from router.Tier.SCENE ($0.14, isolated composition) — see
+# router.BACKDROP_PROMPT for the two-concept note.
+BACKDROP_MODEL = "wavespeed/nano-banana-2-fast"
 MUSIC_DEFAULT_DURATION_MS = 30_000
 
 
@@ -136,10 +138,10 @@ def estimate(script: Script, cfg: config.Config | None = None) -> cost.Estimate:
         else:
             est.add(f"{tier.value} ({model})", cost.image_price(model), len(assets))
 
-    # Full-frame themed scene backgrounds — one per beat that declares a scene.
-    n_scenes = sum(1 for b in script.beats if b.scene.strip())
-    if n_scenes:
-        est.add(f"scene ({SCENE_MODEL})", cost.image_price(SCENE_MODEL), n_scenes)
+    # Full-frame themed backdrops — one per beat that declares a `scene`.
+    n_backdrops = sum(1 for b in script.beats if b.scene.strip())
+    if n_backdrops:
+        est.add(f"backdrop ({BACKDROP_MODEL})", cost.image_price(BACKDROP_MODEL), n_backdrops)
 
     if script.character_count:
         est.add(
@@ -186,21 +188,21 @@ class Factory:
 
     # -- asset production -------------------------------------------------
 
-    def _produce_scene(self, job_id: str, description: str, width: int, height: int) -> Path | None:
-        """A full-frame themed background scene (the beat's 'world'). Unlike a
-        cutout it is NOT chroma-keyed — it fills the frame and text sits over
-        it. Cached by (model, prompt, size)."""
-        prompt = SCENE_FULL_PROMPT.format(description=description)
-        key = cache.content_hash(model=SCENE_MODEL, prompt=prompt, width=width, height=height, kind="scene")
+    def _produce_backdrop(self, job_id: str, description: str, width: int, height: int) -> Path | None:
+        """A full-frame themed backdrop (the beat's 'world', from beat.scene).
+        Unlike a cutout it is NOT chroma-keyed — it fills the frame and text sits
+        over it. Distinct from Tier.SCENE. Cached by (model, prompt, size)."""
+        prompt = BACKDROP_PROMPT.format(description=description)
+        key = cache.content_hash(model=BACKDROP_MODEL, prompt=prompt, width=width, height=height, kind="backdrop")
         hit = cache.get(key, "png")
         if hit:
             return hit
 
         provider = WaveSpeedImages(self.cfg.require("wavespeed_key"))
-        data = provider.generate(prompt, model=SCENE_MODEL, width=width, height=height)
+        data = provider.generate(prompt, model=BACKDROP_MODEL, width=width, height=height)
         path = cache.put(key, "png", data)
         db.record_asset(
-            self.conn, key, job_id, "scene", SCENE_MODEL, str(path), cost.image_price(SCENE_MODEL)
+            self.conn, key, job_id, "backdrop", BACKDROP_MODEL, str(path), cost.image_price(BACKDROP_MODEL)
         )
         return path
 
@@ -390,18 +392,18 @@ class Factory:
                 if path:
                     produced[asset.id] = _publish_for_remotion(path)
 
-        # Full-frame themed scene backgrounds, one per beat that declares one.
-        # Degrade gracefully: a scene failure just falls back to the cream
+        # Full-frame themed backdrops, one per beat that declares one (beat.scene).
+        # Degrade gracefully: a backdrop failure just falls back to the cream
         # paper Background for that beat, never blocks the build.
         scene_by_beat: dict[int, str] = {}
         for beat in script.beats:
             if beat.scene.strip():
                 try:
-                    p = self._produce_scene(job_id, beat.scene, width, height)
+                    p = self._produce_backdrop(job_id, beat.scene, width, height)
                     if p:
                         scene_by_beat[beat.index] = _publish_for_remotion(p)
                 except Exception as exc:  # noqa: BLE001 - degrade, never block
-                    print(f"Scene generation failed for beat {beat.index}, using paper bg: {exc}")
+                    print(f"Backdrop generation failed for beat {beat.index}, using paper bg: {exc}")
 
         voice_id = tokens.get("voiceId")
 

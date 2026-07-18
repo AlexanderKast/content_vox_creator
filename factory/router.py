@@ -18,7 +18,9 @@ from enum import Enum
 
 class Tier(str, Enum):
     CHARACTER = "character"  # Magnific — consistency across scenes
-    SCENE = "scene"          # Nano Banana — prompt adherence, complex composition
+    SCENE = "scene"          # Nano Banana PRO — isolated-on-green complex
+                             # composition / text-in-image asset (NOT the
+                             # full-frame beat backdrop; that's BACKDROP_MODEL).
     CUTOUT = "cutout"        # Flux / Z-Image — green-screen stickers
     PHOTO = "photo"          # Apify — real things that exist in the world
 
@@ -99,11 +101,17 @@ CHARACTER_PROMPT = (
     "Isolated on pure green screen background #00FF00, no shadow on background."
 )
 
-# Full-frame themed background scene (NOT isolated on green — it fills the
-# whole frame as the beat's "world": a bakery, a vintage map, a stadium).
+# BACKDROP — full-frame themed background (NOT isolated on green — it fills the
+# whole frame as the beat's "world": a bakery, a vintage map, a stadium). This
+# is a DIFFERENT concept from Tier.SCENE above:
+#   Tier.SCENE  = an isolated-on-green complex composition/text asset, routed
+#                 to nano-banana-pro ($0.14), keyed and composited like a cutout.
+#   BACKDROP    = a full-bleed background image, NOT keyed, text sits over it,
+#                 produced by pipeline.BACKDROP_MODEL (nano-banana-2-fast $0.045).
+# The manifest field `beat.scene` feeds the BACKDROP path, not Tier.SCENE.
 # Cream/warm palette + engraving so it matches the editorial look, with a big
 # clear area in the center-lower third for the title + subtitle to sit on.
-SCENE_FULL_PROMPT = (
+BACKDROP_PROMPT = (
     "{description}. Full-frame vertical 9:16 illustrated scene, vintage engraving "
     "and woodcut style on an ELEGANT DARK near-black background, luminous GOLD and "
     "warm amber line work and highlights, fine halftone shading, subtle green accents, "
