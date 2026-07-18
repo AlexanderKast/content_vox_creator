@@ -1,0 +1,70 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "topic": "Que son las skills de Claude y para que sirven",
+  "hook": "Claude tiene manos que no sabias que tenia.",
+  "cta": "Comenta QUE AUTOMATIZAR y te digo por donde empezar con tus propias skills.",
+  "music_prompt": "warm curious documentary underscore, light plucky synth, subtle percussion, forward motion, no vocals",
+  "gating": {
+    "gating_question": "comenta QUE AUTOMATIZAR",
+    "lead_magnet_path": "assets/lead-magnets/guia-automatizacion.md"
+  },
+  "beats": [
+    {
+      "index": 1,
+      "text": "CLAUDE TIENE MANOS QUE NO SABIAS QUE TENIA",
+      "subtitle": "Y las usa solo cuando las necesita",
+      "seconds": 6,
+      "assets": [{ "id": "hands", "description": "two engraved hands emerging from an open wooden toolbox reaching outward, bold black ink line art, editorial cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "UNA SKILL ES UNA CAJA DE HERRAMIENTAS QUE CLAUDE ABRE SOLO CUANDO LE SIRVE",
+      "subtitle": "No la carga antes. No estorba.",
+      "seconds": 6,
+      "assets": [{ "id": "folder", "description": "an ornate folder opening with a single tool sliding out, halftone shading, editorial cutout" }]
+    },
+    {
+      "index": 3,
+      "text": "NO SE LA TENES QUE PEDIR POR NOMBRE",
+      "subtitle": "El reconoce la tarea y trae la skill correcta solo",
+      "seconds": 5,
+      "assets": [{ "id": "radar", "description": "a vintage radar dish sweeping and locking onto a small icon, engraving style, editorial cutout" }]
+    },
+    {
+      "index": 4,
+      "text": "VIENEN EMPAQUETADAS: PASOS, EJEMPLOS, PLANTILLAS",
+      "subtitle": "Conocimiento listo para ejecutar, no teoria suelta",
+      "seconds": 6,
+      "assets": [{ "id": "crate", "description": "a wooden crate cut open showing neatly stacked layers of blueprints and stamps inside, cross-hatching, editorial cutout" }]
+    },
+    {
+      "index": 5,
+      "text": "Y PODES INSTALAR LAS TUYAS",
+      "subtitle": "Tu forma de trabajar, convertida en herramienta repetible",
+      "seconds": 6,
+      "assets": [{ "id": "stamp", "description": "a hand pressing a custom wax seal stamp onto paper, bold outlines, editorial cutout" }]
+    },
+    {
+      "index": 6,
+      "text": "ES LA DIFERENCIA ENTRE UN ASISTENTE Y UN OPERARIO",
+      "subtitle": "Uno responde. El otro hace.",
+      "seconds": 5,
+      "assets": [{ "id": "gears", "description": "two interlocking engraved gears turning, one large one small, halftone, editorial cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "POR ESO CLAUDE NO ES UN CHAT. ES UN TALLER.",
+      "subtitle": "Cada skill es una maquina mas en el taller",
+      "seconds": 6,
+      "assets": [{ "id": "workshop", "description": "a vintage workshop wall covered in hanging tools and machines, dramatic light, editorial cutout" }]
+    },
+    {
+      "index": 8,
+      "text": "QUE TAREA TUYA CONVERTIRIAS EN UNA SKILL?",
+      "subtitle": "Comenta QUE AUTOMATIZAR y te digo por donde empezar",
+      "seconds": 5,
+      "assets": [{ "id": "mirror", "description": "an ornate hand mirror reflecting a glowing question mark, engraving style, editorial cutout" }]
+    }
+  ]
+}

@@ -3,8 +3,10 @@
 .env
 brand.json
 
-# Personal skill doc (tu @, credenciales, marcas, IDs de Metricool). No viaja.
-SKILL.md
+# Personal skill doc en la RAÍZ (tu @, credenciales, marcas, IDs de Metricool).
+# No viaja. Anclado a "/" para NO matchear los SKILL.md de .claude/skills/**,
+# que sí deben viajar.
+/SKILL.md
 
 # Generated / local
 .venv/
@@ -18,5 +20,14 @@ assets/generated/
 assets/lead-magnets/
 remotion/public/generated/
 
-# Session / harness artifacts (not project source)
-.claude/
+# Session / harness artifacts (not project source) — EXCEPT the project's own
+# skills, which travel with the repo so any Claude Code session in this folder
+# inherits them.
+.claude/*
+!.claude/skills/
+
+# Briefs — artefactos EFÍMEROS de revisión (uno por pedido, para que Alexander
+# lea/corrija/apruebe antes de construir). Son regenerables y personales a su
+# ciclo de aprobación; lo durable/compartible es el examples/<slug>.json que sí
+# viaja. Mismo criterio que out/.
+briefs/
