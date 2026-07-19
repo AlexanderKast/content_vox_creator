@@ -13,7 +13,16 @@ import { ELEVATION, MOTION, hexToRgba } from "../design";
  *
  * `loopFrames` (carrusel) makes the motion periodic (whole cycles) and drops
  * the net drift + one-shot entrance, so the seamless loop stays intact.
+ *
+ * Parallax: the near layer to SceneBackground's far one — bigger amplitude,
+ * same sin(loopAngle) phase (a real camera pan moves every depth layer the
+ * same direction at the same time; only the amount differs — that
+ * difference IS the parallax, not a timing offset). A public figure gets a
+ * much smaller amplitude: a real face swimming sideways in a loop reads as
+ * wrong, not alive.
  */
+const PARALLAX_CUTOUT_PX = 24;
+const PARALLAX_CUTOUT_PUBLIC_FIGURE_PX = 6;
 export const Cutout: React.FC<{
   src: string;
   delay?: number;
@@ -77,6 +86,12 @@ export const Cutout: React.FC<{
         ? Math.sin(loopAngle * 1.5 + phase) * MOTION.ambient.scalePulse
         : Math.sin((local / fps) * 1.1 + phase) * MOTION.ambient.scalePulse);
 
+  // Base loopAngle, no `+ phase` — every cutout in a beat has to pan
+  // together with the background (one shared camera motion), not drift
+  // apart from each other the way floatY/sway deliberately do for variety.
+  const parallaxAmp = isPublicFigure ? PARALLAX_CUTOUT_PUBLIC_FIGURE_PX : PARALLAX_CUTOUT_PX;
+  const parallaxX = looping ? Math.sin(loopAngle) * parallaxAmp : 0;
+
   // Chained filter, not a single value — CSS lets multiple drop-shadow()
   // calls stack, each one following the image's actual alpha shape (unlike
   // box-shadow, which would draw a rectangle around the transparent PNG).
@@ -96,6 +111,9 @@ export const Cutout: React.FC<{
         top: `${topPercent ?? 50}%`,
         width: `${60 * scale}%`,
         transform: [
+          // Outermost — a true screen-pixel shift, unaffected by the scale
+          // below (same reasoning as SceneBackground's translateX-before-scale).
+          `translate(${parallaxX}px, 0px)`,
           `translate(-50%, -50%)`,
           `translate(${x}%, ${(topPercent !== undefined ? 0 : y) + drift / 10 + floatY / 10}%)`,
           `scale(${entrance * pulse})`,
