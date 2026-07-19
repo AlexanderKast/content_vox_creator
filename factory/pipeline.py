@@ -389,11 +389,15 @@ class Factory:
 
         ext = "jpg"
         if asset.is_public_figure:
-            # A real, named public figure — never shipped as a clean,
-            # identifiable close-up, and never as a raw color photo with a
-            # black box (reads as moderation, not design). See
-            # factory.redact for the duotone + eye-bar treatment.
-            data = redact.stylize_public_figure(data)
+            # A real, named public figure: background removed (isolated
+            # cutout, factory.redact.remove_background — local/free,
+            # rembg) and duotone-styled to match the rest of the vox-paper
+            # look. Full face, NOT redacted (redact_eyes=False) — 2026-07-18
+            # default, Alexander explicit request; see factory.redact's
+            # module docstring for the "sin excepcion" history this
+            # reverses.
+            data = redact.remove_background(data)
+            data = redact.stylize_public_figure(data, redact_eyes=False)
             ext = "png"
         path = cache.put(key, ext, data)
         db.record_asset(

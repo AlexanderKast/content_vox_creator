@@ -160,10 +160,20 @@ estas diferencias:
     Cutout/Scene/Backdrop que generás con IA) — ahí el nombre solo tienta al
     modelo a inventar una cara parecida, que es exactamente lo que no se
     debe hacer.
-  - El pipeline ya tapa los ojos automáticamente (`factory/redact.py`, local,
-    sin costo) y Remotion ya la ubica en el placement más chico/alejado
-    (`DISTANT_PLACEMENT` en `design.ts`) — no hace falta pedir nada de eso en
-    el prompt, es automático una vez que las dos banderas están puestas.
+  - El pipeline ya recorta el fondo (`factory/redact.py::remove_background`,
+    local, `rembg`/u2net, sin costo — queda un cutout real de la persona, no
+    una foto rectangular) y aplica el mismo duotono blanco-y-negro que el
+    resto de los cutouts `vox-paper` — automático una vez que las dos
+    banderas están puestas, no hace falta pedir nada de eso en el prompt.
+  - **Cara completa, sin redactar** (default 2026-07-18, pedido explícito de
+    Alexander — antes era "sin excepción" tapar los ojos con una barra roja;
+    esa regla se revirtió a propósito, confirmada en el momento). En
+    Remotion (carrusel) la figura pública se ubica centrada, sin rotación
+    (se mantiene digna/legible) pero **ya no** en el placement más chico —
+    misma escala que cualquier otro cutout del slide. Si algún día se
+    necesita volver al tratamiento anonimizado, `redact.stylize_public_figure`
+    todavía acepta `redact_eyes=True` — no se borró, solo dejó de ser el
+    default.
   - **Apify (`Tier.PHOTO`) puede igual devolver 0 resultados** para una query
     muy específica o rara (normal en cualquier scraper — el actor
     `hooli~google-images-scraper`, en uso desde 2026-07-18, ya funciona bien

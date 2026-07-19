@@ -15,3 +15,8 @@ faster-whisper
 # ships an empty cv2/data/ (no haarcascade XMLs, no CascadeClassifier);
 # 4.10.0.84 is the last verified-good release with both.
 opencv-python-headless==4.10.0.84
+
+# factory/redact.py — remove_background(). Local u2net model (downloads once
+# to ~/.u2net/, ~176MB, then free/offline) to isolate a public figure into a
+# real cutout instead of a rectangular photo. No per-run cost, no API key.
+rembg

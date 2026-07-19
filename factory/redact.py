@@ -1,23 +1,29 @@
-"""Eye redaction + style treatment for real photos of public figures.
+"""Background removal + style treatment for real photos of public figures.
 
 A public-figure asset (factory.router.Asset.is_public_figure) is always a
 REAL scraped photo (factory.providers.photos_apify — never invented). Before
 that photo is cached or rendered, this module:
-  1. blacks out (in Hot Red) the eyes so the video never carries a clean,
-     identifiable close-up, and
+  1. isolates the person (background removed — see remove_background,
+     rembg/u2net, local/free) so the asset is a real cutout, not a
+     rectangular photo with a setting behind it, and
   2. converts the whole photo to the same black-and-white halftone duotone
      treatment as every generated `vox-paper` cutout (factory.router), so a
-     real photo doesn't read as "a photo with a censor bar" sitting next to
-     illustrated cutouts — it reads as the same design system. A raw black
-     rectangle on an unmodified color photo looked like a moderation
-     artifact, not a deliberate choice (verified 2026-07-18, Alexander:
-     "las fotos no se ven bien").
+     real photo reads as the same design system as the illustrated cutouts
+     next to it, not a pasted-in photo.
 
-Local only: OpenCV's bundled Haar cascades, no network call, no per-run cost.
-If no face/eyes are found (bad angle, sunglasses, low resolution — Apify
-results are not curated), this degrades to blacking out the image's upper
-band rather than shipping an unredacted photo. Over-covering is the safe
-failure; under-covering is not.
+Eye redaction (Hot Red bar) is now OPTIONAL (redact_eyes, default True in
+stylize_public_figure) — 2026-07-18, Alexander explicitly asked for full
+unredacted faces for this project's public-figure photos (confirmed after
+being told this reverses the prior "sin excepcion" rule) and
+factory.pipeline._produce_photo now defaults to redact_eyes=False. The
+option still exists (not deleted) for a future project that wants the old
+anonymized treatment back.
+
+Face/eye detection: OpenCV's bundled Haar cascades, local, no network call,
+no per-run cost. If no face/eyes are found (bad angle, sunglasses, low
+resolution — Apify results are not curated) and redact_eyes=True, this
+degrades to blacking out the image's upper band rather than shipping an
+unredacted photo. Over-covering is the safe failure; under-covering is not.
 """
 
 from __future__ import annotations
@@ -53,6 +59,18 @@ _ARCHIVAL_TAN_BGR = (156, 187, 201)  # #C9BB9C
 _HOT_RED_BGR = (31, 46, 182)         # #B62E1F — reserved for strokes/marks,
                                       # same rule the style sheet applies to
                                       # every other accent use in this project.
+
+def remove_background(image_bytes: bytes) -> bytes:
+    """Isolate the person on a transparent background — PNG bytes in, PNG
+    (RGBA) bytes out. rembg/u2net, local model (downloads once to
+    ~/.u2net/, ~176MB, then free/offline) — chosen 2026-07-18 after
+    Magnific's remove-background tool was out of credits mid-session; no
+    reason to prefer the paid API when this gives the same result for
+    people/subjects. Import is lazy: rembg pulls in onnxruntime + scikit-image,
+    heavy, and most of the pipeline never touches a public-figure photo."""
+    from rembg import remove  # noqa: PLC0415 - lazy, see docstring
+    return remove(image_bytes)
+
 
 _face_cascade: cv2.CascadeClassifier | None = None
 _eye_cascade: cv2.CascadeClassifier | None = None
