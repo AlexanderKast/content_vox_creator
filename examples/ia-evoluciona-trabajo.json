@@ -1,0 +1,70 @@
+{
+  "mode": "carrusel",
+  "brand": "alexander",
+  "topic": "La IA no te va a dejar sin trabajo, te va a evolucionar el trabajo",
+  "hook": "LA IA NO TE VA A DEJAR SIN TRABAJO",
+  "cta": "¿Qué parte de tu trabajo ya le delegaste a la IA? Comentá abajo — leo todos.",
+  "music_prompt": "confident modern electronic underscore, steady mid-tempo pulse, motivational, no lyrics",
+  "gating": {
+    "gating_question": "¿qué parte de tu trabajo ya delegaste a la IA?",
+    "lead_magnet_path": "assets/lead-magnets/guia-automatizacion.md"
+  },
+  "beats": [
+    {
+      "index": 1,
+      "text": "LA IA NO TE VA A DEJAR SIN TRABAJO",
+      "subtitle": "",
+      "seconds": 5,
+      "assets": [{ "id": "hook", "description": "bold human silhouette standing firm against digital wave, editorial cutout" }]
+    },
+    {
+      "index": 2,
+      "text": "EL QUE NO LA USE, SÍ",
+      "subtitle": "",
+      "seconds": 5,
+      "assets": [{ "id": "threat", "description": "two runners on a track, one with a rocket strapped to their back, editorial cutout" }]
+    },
+    {
+      "index": 3,
+      "text": "LO QUE DESAPARECE: LAS TAREAS REPETITIVAS. NO VOS.",
+      "subtitle": "La diferencia importa.",
+      "seconds": 6,
+      "assets": [{ "id": "tasks", "description": "robotic arm sorting identical grey tiles on a conveyor belt, editorial cutout" }]
+    },
+    {
+      "index": 4,
+      "text": "LO QUE NUNCA VA A REEMPLAZAR: TU CRITERIO",
+      "subtitle": "Criterio, voz, estrategia — eso es tuyo.",
+      "seconds": 6,
+      "assets": [{ "id": "compass", "description": "human hand holding a compass pointing true north, close up, editorial cutout" }]
+    },
+    {
+      "index": 5,
+      "text": "EL QUE GANA: EL QUE DIRIGE LA IA, NO EL QUE COMPITE",
+      "subtitle": "Director, no competidor.",
+      "seconds": 6,
+      "assets": [{ "id": "director", "description": "conductor directing an orchestra of glowing screens, editorial cutout" }]
+    },
+    {
+      "index": 6,
+      "text": "8 AÑOS EN NEGOCIOS DIGITALES. HOY PRODUZCO 10X CON EL MISMO EQUIPO.",
+      "subtitle": "Dato real de mi operación.",
+      "seconds": 6,
+      "assets": [{ "id": "proof", "description": "single person controlling multiple floating productivity dashboards, editorial cutout" }]
+    },
+    {
+      "index": 7,
+      "text": "LA PREGUNTA NO ES ¿ME REEMPLAZA? ES ¿CÓMO LA DIRIJO?",
+      "subtitle": "Cambiá la pregunta, cambiás el resultado.",
+      "seconds": 6,
+      "assets": [{ "id": "reframe", "description": "two doors side by side, one labeled fear one labeled direction, editorial cutout" }]
+    },
+    {
+      "index": 8,
+      "text": "¿QUÉ PARTE DE TU TRABAJO YA LE DELEGASTE A LA IA?",
+      "subtitle": "Comentá abajo — leo todos.",
+      "seconds": 5,
+      "assets": [{ "id": "cta", "description": "speech bubble with a question mark glowing, clean background, editorial cutout" }]
+    }
+  ]
+}
