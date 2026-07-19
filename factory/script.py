@@ -20,7 +20,7 @@ from pathlib import Path
 from .formulas import FORMULAS, Formula
 from .gating import GatingSpec, is_personalized
 from .router import Asset
-from .timing import ASSET_STAGGER_FRAMES, UNDERLINE_DELAY_FRAMES
+from .timing import UNDERLINE_DELAY_FRAMES, asset_entrance_frame
 
 
 class Mode(str, Enum):
@@ -212,8 +212,10 @@ class Script:
             return f"{family}-{chr(ord('a') + idx % count)}"
 
         cues = [SfxCue(variant("whoosh"), 0)]
+        beat_duration_frames = round(beat.seconds * FPS)
         for i, _asset in enumerate(beat.assets):
-            cues.append(SfxCue(variant("pop"), i * ASSET_STAGGER_FRAMES))
+            frame = asset_entrance_frame(i, len(beat.assets), beat_duration_frames)
+            cues.append(SfxCue(variant("pop"), frame))
         cues.append(SfxCue(variant("marker"), UNDERLINE_DELAY_FRAMES))
         # Impact hit on the open (epic hook), the close (remate), and any beat
         # that leans on a number.

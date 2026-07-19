@@ -88,11 +88,21 @@ export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
                   const place = asset.isPublicFigure
                     ? DISTANT_PLACEMENT
                     : PLACEMENTS[(assetIndex + beatIndex) % PLACEMENTS.length];
+                  // Spread across the beat's OWN duration, not clustered in
+                  // the first few frames — asset 0 lands with the cut,
+                  // later ones land partway
+                  // through so a long beat keeps producing new visual
+                  // events instead of going dead after the opening
+                  // flourish. Keep in sync with factory/rhythm.py's
+                  // ASSET_SPREAD_FRACTION (same fraction, same math).
+                  const delay = Math.round(
+                    (assetIndex / beat.assets.length) * durationInFramesForBeat * MOTION.frames.assetSpreadFraction
+                  );
                   return (
                     <Cutout
                       key={asset.src}
                       src={staticFile(asset.src)}
-                      delay={assetIndex * MOTION.frames.assetStagger}
+                      delay={delay}
                       x={place.x}
                       y={place.y}
                       scale={place.scale}

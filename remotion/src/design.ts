@@ -67,7 +67,14 @@ export const MOTION = {
     shake: 9, // opener screen-shake decay
     underline: 12, // underline draw
     loopFade: 6, // seamless-loop foreground breath
-    assetStagger: 4, // cutouts entering one after another
+    // BoxVideo ONLY: with multiple assets per beat, spreading their
+    // entrances across the beat's own duration (not clustered in the
+    // first ~0.13s) means something new visibly happens partway through a
+    // long beat instead of one flourish followed by dead air — this is
+    // the fix for "mas dinamico... mas imagenes de apoyo" (2026-07-18).
+    // factory/rhythm.py's dead-zone detector has to use the SAME fraction
+    // (factory/timing.py ASSET_SPREAD_FRACTION) or its report goes stale.
+    assetSpreadFraction: 0.65,
   },
   // Ambient continuous motion (drift/float), in scene units. floatPx/swayDeg
   // bumped 2026-07-18 (6->10, 1.2->2.5) — the cutout bob/tilt read as nearly

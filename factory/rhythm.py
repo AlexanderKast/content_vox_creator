@@ -10,27 +10,31 @@ This is advisory only (criterion, not law — a formula's own duration bounds
 can legitimately force a longer breath in a spot). `pipeline.build()` prints
 the report but never fails the build over it.
 
-Coupling note: ASSET_STAGGER_FRAMES and UNDERLINE_DELAY_FRAMES mirror the
-`delay` values BoxVideo.tsx actually uses for Cutout/Underline. If those
-change in the TSX, update them here too — there is no runtime instrumentation
-tying this to the real render, this is static analysis of the manifest.
+Coupling note: UNDERLINE_DELAY_FRAMES and asset_entrance_frame() (factory.timing)
+mirror the `delay` values BoxVideo.tsx actually uses for Underline/Cutout. If
+those change in the TSX, update factory.timing too — there is no runtime
+instrumentation tying this to the real render, this is static analysis of
+the manifest.
 """
 
 from __future__ import annotations
 
-from .timing import ASSET_STAGGER_FRAMES, UNDERLINE_DELAY_FRAMES
+from .timing import UNDERLINE_DELAY_FRAMES, asset_entrance_frame
 
 MAX_GAP_SECONDS = 1.2
 
 
 def compute_visual_events(manifest: dict) -> list[int]:
     """Frame numbers (global) where something visual changes."""
+    fps = manifest["fps"]
     events: list[int] = []
     for beat in manifest["beats"]:
         start = beat["sequenceFrom"]
         events.append(start)  # text change — every beat changes the caption
-        for i, _asset in enumerate(beat["assets"]):
-            events.append(start + i * ASSET_STAGGER_FRAMES)
+        beat_duration_frames = round(beat["seconds"] * fps)
+        assets = beat["assets"]
+        for i, _asset in enumerate(assets):
+            events.append(start + asset_entrance_frame(i, len(assets), beat_duration_frames))
         events.append(start + UNDERLINE_DELAY_FRAMES)
     return sorted(set(events))
 
