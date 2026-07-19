@@ -76,11 +76,16 @@ export const MOTION = {
   // objects (Cutout — a public figure does NOT get this, see Cutout.tsx).
   ambient: {
     driftPct: -20, // cutout slow upward drift over a beat
-    floatPx: 10, // cutout bob amplitude
-    swayDeg: 2.5, // cutout tilt amplitude
-    scalePulse: 0.05, // cutout slow breathing scale amplitude
-    kenBurnsZoom: 0.05, // per-beat push-in
-    textFloatPx: 2.5, // settled subtitle float
+    // floatPx/swayDeg/scalePulse bumped 2026-07-18 ("mas amplitud de
+    // movimiento" — the parallax + ambient motion read as too subtle to
+    // notice on a real playback, not just a still). kenBurnsZoom NOT
+    // touched here — it only drives BoxVideo (BeatStage.tsx), out of scope
+    // for this carrusel-only request.
+    floatPx: 16, // cutout bob amplitude
+    swayDeg: 4, // cutout tilt amplitude
+    scalePulse: 0.08, // cutout slow breathing scale amplitude
+    kenBurnsZoom: 0.05, // per-beat push-in (BoxVideo only)
+    textFloatPx: 2.5, // settled subtitle float — NOT bumped, text needs to hold still to read
   },
 } as const;
 

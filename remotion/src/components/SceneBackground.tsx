@@ -27,7 +27,11 @@ import { roles } from "../design";
 // phase-shifted one: a real camera pan moves near and far layers in the
 // same direction at the same time, just by different amounts — that
 // difference in amount IS the parallax, not a difference in timing.
-const PARALLAX_BG_PX = 10;
+// Bumped 10->20 (2026-07-18, "mas amplitud de movimiento" — 10px read as
+// too subtle on real playback). Still well inside the zoom's overscan
+// margin at every point in the cycle (checked: minimum margin ~46px at the
+// zoom range below, always > this amplitude).
+const PARALLAX_BG_PX = 20;
 
 export const SceneBackground: React.FC<{
   tokens: BrandTokens;
@@ -41,8 +45,11 @@ export const SceneBackground: React.FC<{
   if (!scene) return <Background tokens={tokens} seamless={seamless} />;
 
   const angle = (frame / Math.max(1, durationInFrames)) * Math.PI * 2;
+  // Range bumped 0.04->0.07 (2026-07-18, same "mas amplitud" pass) — more
+  // noticeable push-in without needing a bigger overscan safety check than
+  // the PARALLAX_BG_PX comment above already accounts for.
   const zoom = seamless
-    ? 1.05 + ((1 - Math.cos(angle)) / 2) * 0.04
+    ? 1.05 + ((1 - Math.cos(angle)) / 2) * 0.07
     : interpolate(frame, [0, durationInFrames], [1.04, 1.12], { extrapolateRight: "clamp" });
   // Periodic over durationInFrames (angle already is — sin(0) === sin(2π))
   // so this can NEVER break the loop the way a linear interpolate would.

@@ -21,8 +21,12 @@ import { ELEVATION, MOTION, hexToRgba } from "../design";
  * much smaller amplitude: a real face swimming sideways in a loop reads as
  * wrong, not alive.
  */
-const PARALLAX_CUTOUT_PX = 24;
-const PARALLAX_CUTOUT_PUBLIC_FIGURE_PX = 6;
+// Bumped 24->42 / 6->10 (2026-07-18, "mas amplitud de movimiento") — still
+// far inside the safe margin: even the biggest hero cutout (scale 0.56, no
+// scene) sits with >160px of clearance to the frame edge before any
+// parallax is added, so 42px never approaches it.
+const PARALLAX_CUTOUT_PX = 42;
+const PARALLAX_CUTOUT_PUBLIC_FIGURE_PX = 10;
 export const Cutout: React.FC<{
   src: string;
   delay?: number;
