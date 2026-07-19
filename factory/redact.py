@@ -29,8 +29,13 @@ import numpy as np
 # this into the cache key, so a version bump forces every public-figure
 # photo to be reprocessed instead of quietly serving the old look from
 # cache. v1 was a raw black rectangle on the unmodified color photo; v2 is
-# the duotone + Hot Red bar below.
-REDACT_VERSION = "redact-v2"
+# the duotone + Hot Red bar below. v3 (2026-07-18, Alexander explicit
+# request, confirmed after being told this reverses the earlier
+# "sin excepcion" eye-bar rule): the eye bar becomes optional
+# (redact_eyes=False), and the function now accepts an already
+# background-removed RGBA source (person isolated, transparent elsewhere)
+# and preserves that alpha channel through the duotone.
+REDACT_VERSION = "redact-v3"
 
 # Bundled with opencv-python-headless — no download, no external asset.
 _FACE_CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
@@ -135,20 +140,31 @@ def _duotone(image: np.ndarray) -> np.ndarray:
     return lut[indices]
 
 
-def stylize_public_figure(image_bytes: bytes) -> bytes:
-    """Return `image_bytes` (any format OpenCV can decode) re-encoded as PNG:
-    duotone black-and-white (matches the rest of the vox-paper look) with a
-    Hot Red bar over the eyes (or, failing detection, the upper band)."""
+def stylize_public_figure(image_bytes: bytes, *, redact_eyes: bool = True) -> bytes:
+    """Return `image_bytes` (any format OpenCV can decode, RGBA or not) re-
+    encoded as PNG: duotone black-and-white (matches the rest of the
+    vox-paper look). `redact_eyes=True` (default) adds the Hot Red bar over
+    the eyes (or, failing detection, the upper band) — `redact_eyes=False`
+    skips it, full identifiable face. If the source already has an alpha
+    channel (e.g. background-removed — Magnific remove-background, person
+    isolated on transparent), that alpha survives the duotone untouched, so
+    the result is a proper cutout, not a rectangular photo."""
     array = np.frombuffer(image_bytes, dtype=np.uint8)
-    image = cv2.imdecode(array, cv2.IMREAD_COLOR)
+    image = cv2.imdecode(array, cv2.IMREAD_UNCHANGED)
     if image is None:
         raise ValueError("redact.stylize_public_figure: could not decode image bytes")
 
-    bars = _eye_bars(image)  # detected on the ORIGINAL image — duotone flattens contrast
-    styled = _duotone(image)
+    has_alpha = image.ndim == 3 and image.shape[2] == 4
+    bgr = image[:, :, :3] if has_alpha else image
+
+    bars = _eye_bars(bgr) if redact_eyes else []  # detected on the ORIGINAL — duotone flattens contrast
+    styled = _duotone(bgr)
 
     for (bx, by, bw, bh) in bars:
         cv2.rectangle(styled, (bx, by), (bx + bw, by + bh), _HOT_RED_BGR, thickness=-1)
+
+    if has_alpha:
+        styled = cv2.merge([styled[:, :, 0], styled[:, :, 1], styled[:, :, 2], image[:, :, 3]])
 
     ok, encoded = cv2.imencode(".png", styled)
     if not ok:
