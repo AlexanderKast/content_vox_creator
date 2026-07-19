@@ -13,15 +13,17 @@ import { Stat } from "../components/Stat";
 import { Subtitle } from "../components/Subtitle";
 import { SwipeHint } from "../components/SwipeHint";
 import { Typewriter } from "../components/Typewriter";
-import { SAFE, TYPE, headerLayout, hexToRgba, roles } from "../design";
+import { SAFE, SUBTITLE_BOTTOM, TITLE_TOP, TYPE, fitTitleSize, hexToRgba, roles } from "../design";
 import type { Manifest } from "../types";
 
 /**
- * Mode CARRUSEL — 4:5, one looping slide, consumed MUTED. Header-over-image
- * layout (2026-07-18 — moved from hero-over-image): kicker + title + subtitle
- * stack top-down under the account chrome, the scene/cutout fills the lower
- * frame, badge/searchbar/swipe hint sit at the very bottom. A CTA slide can
- * show a search-bar mockup instead of a subtitle-only close.
+ * Mode CARRUSEL — 4:5, one looping slide, consumed MUTED. Full-bleed layout
+ * (2026-07-18 — replaced header-over-image, which pushed the photo into a
+ * boxed-in lower zone with paper margins and read as a template): the image
+ * is the entire frame, text sits on top of it inside SceneBackground's
+ * top/bottom gradient bands, cutouts float over the clear middle. Matches
+ * the 7 reference carousels Alexander approved (samusdesign, CT Escola,
+ * Rarison, ST Fitness, Guardian, Mirza).
  */
 const SAFE_INSET = SAFE.carousel;
 
@@ -57,10 +59,8 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
 
   const hasStat = !!beat.stat;
   const hasKicker = !!beat.kicker;
-  const { size: titleSize, titleTop, photoTop, subtitleTop, cutoutTop } = headerLayout(
-    beat.text, beat.subtitle, hasKicker
-  );
-  const legible = !!beat.scene;
+  const titleSize = fitTitleSize(beat.text);
+  const titleTop = hasKicker ? TITLE_TOP.withKicker : TITLE_TOP.plain;
 
   return (
     <AbsoluteFill>
@@ -78,17 +78,14 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           transform: `scale(${breathe})`,
         }}
       >
-        {/* Cutouts render on TOP of a scene backdrop too, not only when
-            there's no scene — real Vox layout is background + layered
-            cutout props together. Over a scene the cutout is a smaller
-            accent (70% scale), not the hero. topPercent is an ABSOLUTE
-            frame-relative anchor (Cutout.tsx) computed from cutoutTop —
-            where the header block (kicker/title/subtitle) actually ends,
-            not a guessed constant that only fit one subtitle length
-            (verified 2026-07-18: a 3-line subtitle nearly touched a cutout
-            placed for the 2-line case). A public figure never gets the
-            size-0.56 hero slot or centered rotation-free treatment —
-            smallest scale, dead center, no rotation, regardless of index. */}
+        {/* Cutouts float over the clear middle band of the image (roughly
+            28%-50%, where SceneBackground's gradient stays fully clear) —
+            no topPercent means Cutout's own default (dead center, 50%).
+            Over a scene the cutout is a smaller accent (70% scale), not the
+            hero; without one it's the hero, bigger, on the flat dark
+            surface fill. A public figure never gets the size-0.56 hero slot
+            or centered rotation-free treatment — smallest scale, dead
+            center, no rotation, regardless of index. */}
         {beat.assets.map((asset, assetIndex) => {
           const compact = !!beat.scene;
           const baseScale = asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4;
@@ -97,7 +94,6 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
               key={asset.src}
               src={staticFile(asset.src)}
               delay={assetIndex * 3}
-              topPercent={cutoutTop}
               scale={compact ? baseScale * 0.7 : baseScale}
               x={asset.isPublicFigure ? 0 : assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
               rotate={asset.isPublicFigure ? 0 : assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
@@ -108,13 +104,12 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           );
         })}
 
-        {/* HEADER — kicker, title, subtitle, top-down, above the scene/cutout
-            (2026-07-18: moved here from hero-over-image, matching reference
-            carousels that put the headline under the account chrome, not
-            over the middle of the photo). Kicker types on like the
-            reference sheet's typewriter annotation labels. */}
+        {/* Kicker chip — top, over the top gradient band. Own semi-opaque
+            surface backing, unchanged style, just lives over a photo now
+            instead of paper. Typewriter reveal like the reference sheet's
+            annotation labels. */}
         {beat.kicker ? (
-          <div style={{ position: "absolute", left: 0, right: 0, top: "12%", display: "flex", justifyContent: "center" }}>
+          <div style={{ position: "absolute", left: 0, right: 0, top: "8%", display: "flex", justifyContent: "center" }}>
             <span
               style={{
                 fontFamily: tokens.displayFont,
@@ -133,10 +128,11 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           </div>
         ) : null}
 
-        {/* legibleOverPhoto: a flat surface-color slide already has good
-            ink/background contrast by brand design; a photo backdrop
-            (beat.scene) doesn't guarantee that against ANY image tone, so it
-            gets the white+outline treatment instead. */}
+        {/* Title + subtitle always sit on top of the full-bleed image now —
+            there is no flat-paper case anymore, so legibleOverPhoto is
+            unconditional, not derived from beat.scene. The accent (gold)
+            color for emphasized words stays as-is (KineticText) — it reads
+            fine over the dark gradient. */}
         {hasStat ? (
           <Stat text={beat.stat} tokens={tokens} bottom={30} loopFrames={durationInFrames} />
         ) : (
@@ -147,6 +143,7 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
             size={titleSize}
             top={titleTop}
             loopFrames={durationInFrames}
+            legibleOverPhoto
           />
         )}
 
@@ -154,9 +151,9 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
           text={beat.subtitle}
           tokens={tokens}
           size={38}
-          top={subtitleTop}
+          bottom={SUBTITLE_BOTTOM}
           loopFrames={durationInFrames}
-          legibleOverPhoto={legible}
+          legibleOverPhoto
         />
 
         <Badge text={beat.badge} tokens={tokens} top={22} right={13} rotate={-7} loopFrames={durationInFrames} />
@@ -165,9 +162,6 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         <SearchBar word={beat.search} tokens={tokens} bottom={12} loopFrames={durationInFrames} />
       </AbsoluteFill>
 
-      {/* Always sits in the paper zone reserved above subtitleTop (110px is
-          well within it — see SceneBackground's topOffset), never over the
-          photo, so it never needs the legibleOverPhoto treatment. */}
       <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} />
       {/* Top band, left of SlideCounter — reference carousels put the
           account handle with the rest of the top chrome, not bottom-left

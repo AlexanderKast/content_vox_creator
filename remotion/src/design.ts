@@ -144,45 +144,15 @@ export function fitTitleSize(text: string, base: number = TYPE.size.slide): numb
   return Math.round(base * 0.52);
 }
 
-// Carrusel header stack (2026-07-18 — title moved from "hero over the image"
-// to "header above it"): kicker, title, subtitle all top-anchored now, in
-// that order, and cutoutTop marks where the header block actually ends so a
-// object cutout below it (CarouselSlide, Cutout.tsx topPercent) lands with
-// consistent clearance instead of a hand-picked constant that only worked
-// for one subtitle length (verified 2026-07-18: a 3-line subtitle nearly
-// touched a cutout positioned for the 2-line case). subtitleTop/cutoutTop
-// have to clear however many lines the title/subtitle actually wrap to —
-// same word-count-bucket approach as fitTitleSize (smaller font at higher
-// word counts still wraps to more lines, so the buckets track
-// independently, not proportionally). Single source of truth so
-// CarouselSlide never hand-picks an offset that goes stale the next time a
-// title or subtitle gets longer.
-function estLines(text: string, wordsPerLine: number): number {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.ceil(words / wordsPerLine));
-}
-
-export function headerLayout(text: string, subtitle: string, hasKicker: boolean): {
-  size: number;
-  titleTop: number;
-  subtitleTop: number;
-  cutoutTop: number;
-} {
-  const titleTop = hasKicker ? 20 : 13;
-  // ~3.3 words/line at the fitted title size (TYPE.size.slide 106, bumped
-  // 2026-07-18 — fewer words fit per line than at the old 78 base, so this
-  // dropped from 4.5 with it), ~6 words/line for the smaller fixed-size
-  // subtitle — rough, but bucketed the same way fitTitleSize already is,
-  // not pixel-measured. 12%/line (was 10) — bigger font, taller lines.
-  // weightedWordCount (not a plain split) — same reasoning as fitTitleSize:
-  // several long/emphasized words need more line-clearance than their raw
-  // word count suggests.
-  const titleLines = Math.max(1, Math.ceil(weightedWordCount(text) / 3.3));
-  const subtitleTop = titleTop + titleLines * 12 + 6;
-  const subtitleLines = subtitle ? estLines(subtitle, 6) : 0;
-  const cutoutTop = subtitle ? subtitleTop + subtitleLines * 6 + 8 : subtitleTop + 4;
-  return { size: fitTitleSize(text), titleTop, subtitleTop, cutoutTop };
-}
+// Carrusel text anchors (2026-07-18 — full-bleed rewrite): there is no
+// separate "header zone" and "photo zone" anymore — the image fills the
+// whole frame and text sits on top of it, inside the top/bottom gradient
+// bands SceneBackground draws. So title and subtitle are two independent
+// fixed anchors (top-anchored, bottom-anchored) instead of one chained
+// top-down stack — nothing below the title needs to know how many lines it
+// wrapped to, because nothing is positioned relative to where it ends.
+export const TITLE_TOP = { withKicker: 20, plain: 12 } as const;
+export const SUBTITLE_BOTTOM = 24;
 
 // ---------------------------------------------------------------------------
 // Safe areas.
