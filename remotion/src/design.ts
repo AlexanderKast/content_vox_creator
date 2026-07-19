@@ -169,6 +169,12 @@ export const SAFE = {
 
 export const ELEVATION = {
   sticker: "drop-shadow(0 24px 48px rgba(0,0,0,0.45))",
+  // A stronger, closer-to-the-object shadow for a cutout sitting ON a
+  // full-bleed scene (Cutout's `overScene`) — the thing that reads as
+  // "floating above the photo, not printed on it" (2026-07-18, Rarison's
+  // boxed samurai reference). The plain `sticker` shadow above is for a
+  // cutout that IS the hero on a flat surface, no photo to float over.
+  stickerFloating: "drop-shadow(0 18px 40px rgba(0,0,0,0.6))",
   glowText: (accent: string) => `0 4px 22px ${hexToRgba(accent, 0.33)}`,
 } as const;
 

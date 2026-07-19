@@ -82,10 +82,13 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
             28%-50%, where SceneBackground's gradient stays fully clear) —
             no topPercent means Cutout's own default (dead center, 50%).
             Over a scene the cutout is a smaller accent (70% scale), not the
-            hero; without one it's the hero, bigger, on the flat dark
-            surface fill. A public figure never gets the size-0.56 hero slot
-            or centered rotation-free treatment — smallest scale, dead
-            center, no rotation, regardless of index. */}
+            hero, and gets overScene's heavier floating shadow + accent halo
+            so it visibly separates from the photo instead of reading as
+            printed on it; without a scene it's the hero, bigger, on the
+            flat dark surface fill, with the lighter plain shadow. A public
+            figure never gets the size-0.56 hero slot or centered
+            rotation-free treatment — smallest scale, dead center, no
+            rotation, regardless of index. */}
         {beat.assets.map((asset, assetIndex) => {
           const compact = !!beat.scene;
           const baseScale = asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4;
@@ -100,6 +103,8 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
               index={assetIndex}
               loopFrames={durationInFrames}
               isPublicFigure={asset.isPublicFigure}
+              overScene={compact}
+              haloColor={accent}
             />
           );
         })}

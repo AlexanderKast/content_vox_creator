@@ -1,6 +1,6 @@
 import React from "react";
 import { Img, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { ELEVATION, MOTION } from "../design";
+import { ELEVATION, MOTION, hexToRgba } from "../design";
 
 /**
  * A cutout sticker. Enters with a bounce (MOTION.spring.sticker), never a
@@ -37,9 +37,18 @@ export const Cutout: React.FC<{
   // get it for more visible "life" (2026-07-18: "mas efectos a los objetos
   // que aparecen").
   isPublicFigure?: boolean;
+  // True when this cutout sits on top of a full-bleed scene, not the flat
+  // brand-surface fallback — it needs a heavier shadow to read as floating
+  // above the photo instead of pasted flat on it (see ELEVATION.stickerFloating).
+  overScene?: boolean;
+  // A thin halo in this color, hugging the cutout's actual alpha shape (a
+  // second chained drop-shadow, not a box-shadow — a rectangle around a
+  // transparent PNG would look wrong). Only useful when overScene, for a
+  // cutout whose tones are close to the photo behind it.
+  haloColor?: string;
 }> = ({
   src, delay = 0, x = 0, y = 0, topPercent, scale = 1, rotate = 0, index = 0,
-  loopFrames, isPublicFigure = false,
+  loopFrames, isPublicFigure = false, overScene = false, haloColor,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -68,6 +77,16 @@ export const Cutout: React.FC<{
         ? Math.sin(loopAngle * 1.5 + phase) * MOTION.ambient.scalePulse
         : Math.sin((local / fps) * 1.1 + phase) * MOTION.ambient.scalePulse);
 
+  // Chained filter, not a single value — CSS lets multiple drop-shadow()
+  // calls stack, each one following the image's actual alpha shape (unlike
+  // box-shadow, which would draw a rectangle around the transparent PNG).
+  // The halo is a second, near-zero-blur shadow in the accent color; the
+  // main shadow is what actually sells "floating above the photo".
+  const shadow = overScene ? ELEVATION.stickerFloating : ELEVATION.sticker;
+  const filter = haloColor && overScene
+    ? `${shadow} drop-shadow(0 0 2px ${hexToRgba(haloColor, 0.35)})`
+    : shadow;
+
   return (
     <Img
       src={src}
@@ -82,7 +101,7 @@ export const Cutout: React.FC<{
           `scale(${entrance * pulse})`,
           `rotate(${rotate * entrance + sway}deg)`,
         ].join(" "),
-        filter: ELEVATION.sticker,
+        filter,
       }}
     />
   );
