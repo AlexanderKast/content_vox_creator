@@ -17,8 +17,14 @@ export const Signature: React.FC<{
   top?: number;
   bottom?: number;
   left?: number;
-}> = ({ tokens, top, bottom, left = 8 }) => {
-  const { ink, accent } = roles(tokens);
+  // Same treatment as every other text component (2026-07-18, "todos
+  // absolutamente todos los textos") — white + shadow/outline instead of
+  // the flat brand ink, for whatever unpredictable photo/dark background
+  // sits behind it at this point in the video.
+  legibleOverPhoto?: boolean;
+}> = ({ tokens, top, bottom, left = 8, legibleOverPhoto = false }) => {
+  const { ink: brandInk, accent } = roles(tokens);
+  const ink = legibleOverPhoto ? "#FFFFFF" : brandInk;
   if (!tokens.handle) return null;
 
   return (
@@ -33,7 +39,16 @@ export const Signature: React.FC<{
         opacity: 0.72,
       }}
     >
-      <span style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: accent, display: "inline-block" }} />
+      <span
+        style={{
+          width: 12,
+          height: 12,
+          borderRadius: "50%",
+          backgroundColor: accent,
+          display: "inline-block",
+          boxShadow: legibleOverPhoto ? "0 1px 4px rgba(0,0,0,0.85)" : "none",
+        }}
+      />
       <span
         style={{
           fontFamily: tokens.displayFont,
@@ -41,6 +56,9 @@ export const Signature: React.FC<{
           fontSize: 28,
           letterSpacing: "0.06em",
           color: ink,
+          textShadow: legibleOverPhoto ? "0 2px 6px rgba(0,0,0,0.85), 0 0 3px rgba(0,0,0,0.9)" : "none",
+          WebkitTextStroke: legibleOverPhoto ? "1px #000000" : undefined,
+          paintOrder: legibleOverPhoto ? "stroke fill" : undefined,
         }}
       >
         {tokens.handle}

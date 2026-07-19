@@ -1,5 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AnimatedBorder } from "../components/AnimatedBorder";
 import { Background } from "../components/Background";
 import { BeatStage } from "../components/BeatStage";
 import { Cutout } from "../components/Cutout";
@@ -109,11 +110,13 @@ export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
                   stagger={beatIndex === 0 ? 1 : 2}
                   wordTimings={beatIndex === 0 ? null : beat.wordTimings}
                   sequenceFrom={beat.sequenceFrom}
-                  // Same treatment as the carrusel (2026-07-18): white fill +
-                  // black outline/shadow whenever this beat has a photo
-                  // backdrop, so a long caption that wraps down onto the
-                  // image never loses contrast.
-                  legibleOverPhoto={!!beat.scene}
+                  // Same treatment as the carrusel (2026-07-18) — white fill
+                  // + black outline/shadow. Unconditional now ("todos
+                  // absolutamente todos los textos en blanco o amarillo"),
+                  // not just when beat.scene is set: a beat with only a
+                  // public-figure asset and no scene still sits over the
+                  // dark Background fallback, not a flat paper surface.
+                  legibleOverPhoto
                 />
                 <Underline tokens={tokens} delay={MOTION.frames.underline} />
               </BeatStage>
@@ -127,9 +130,12 @@ export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
         })}
       </AbsoluteFill>
 
+      {/* Animated frame — over everything, edges only, never blocks content. */}
+      <AnimatedBorder tokens={tokens} />
+
       {/* Persistent series tag + brand signature — always on. */}
       <SeriesKicker text={manifest.seriesKicker} tokens={tokens} top={3} />
-      <Signature tokens={tokens} bottom={7} left={7} />
+      <Signature tokens={tokens} bottom={7} left={7} legibleOverPhoto />
     </AbsoluteFill>
   );
 };
