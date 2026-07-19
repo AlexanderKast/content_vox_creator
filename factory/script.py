@@ -52,6 +52,19 @@ class SfxCue:
     frame_offset: int  # frames from the start of the beat's own Sequence
 
 
+@dataclass(frozen=True)
+class PanoramaGroup:
+    """2-3 consecutive carrusel beats sharing ONE wide backdrop image, sliced
+    into per-beat strips (factory.pipeline._produce_panorama) instead of each
+    beat paying for its own independent backdrop. `beats` are indices into
+    Script.beats (contiguous, ascending — see validate()). `description` is
+    the same kind of prompt as Beat.scene: English, no visible text, the
+    template supplies the look."""
+
+    beats: tuple[int, ...]
+    description: str
+
+
 @dataclass
 class Beat:
     """One scene (VIDEO) or one slide (CARRUSEL)."""
@@ -145,6 +158,12 @@ class Script:
     # beat whose `kicker` reads e.g. "CAPÍTULO 2 DE 3" (Beat.kicker already
     # exists for this).
     chapters: int = 1
+
+    # CARRUSEL only: groups of 2-3 consecutive beats that share one wide
+    # backdrop, sliced per-beat (see PanoramaGroup, factory.pipeline
+    # ._produce_panorama). Empty tuple = no panoramas, every beat with a
+    # `scene` gets its own independent backdrop as before.
+    panoramas: tuple[PanoramaGroup, ...] = ()
 
     @property
     def narration_text(self) -> str:
@@ -515,6 +534,49 @@ def _validate_carrusel_aida(script: Script) -> list[str]:
     return errors
 
 
+def _validate_panoramas(script: Script) -> list[str]:
+    """A panorama group is 2-3 consecutive, ascending beat indices sharing
+    one wide backdrop (see PanoramaGroup) — never overlapping another group,
+    never reusing a beat, and never on a beat that ALSO declares its own
+    `scene` (the group replaces that role for its beats, it doesn't add to
+    it). Capped at 3, not 4: the image API only accepts a fixed enum of
+    aspect ratios (factory.providers.images_wavespeed.VALID_ASPECT_RATIOS)
+    and the widest one, 21:9, already fits 3 slides snugly — a 4th would
+    need a wider ratio that doesn't exist, forcing a stretched, distorted
+    crop instead of a clean one."""
+    if not script.panoramas:
+        return []
+
+    errors: list[str] = []
+    beat_by_index = {b.index: b for b in script.beats}
+    seen_beats: set[int] = set()
+
+    for group in script.panoramas:
+        if not (2 <= len(group.beats) <= 3):
+            errors.append(
+                f"Grupo panoramico {list(group.beats)}: usa 2-3 beats, no "
+                f"{len(group.beats)}."
+            )
+        if list(group.beats) != sorted(group.beats) or len(set(group.beats)) != len(group.beats):
+            errors.append(f"Grupo panoramico {list(group.beats)}: los beats deben ser ascendentes y sin repetir.")
+        elif list(group.beats) != list(range(group.beats[0], group.beats[0] + len(group.beats))):
+            errors.append(f"Grupo panoramico {list(group.beats)}: los beats deben ser consecutivos.")
+
+        for idx in group.beats:
+            if idx in seen_beats:
+                errors.append(f"Beat {idx} esta en mas de un grupo panoramico — cada beat va en uno solo.")
+            seen_beats.add(idx)
+            beat = beat_by_index.get(idx)
+            if beat is None:
+                errors.append(f"Grupo panoramico {list(group.beats)}: no existe el beat {idx}.")
+            elif beat.scene.strip():
+                errors.append(
+                    f"Beat {idx} esta en un grupo panoramico Y tiene su propio \"scene\" — "
+                    "el grupo ya cubre el fondo de ese beat, sacale el scene individual."
+                )
+    return errors
+
+
 def validate(script: Script) -> list[str]:
     """Return blocking errors. Empty list means the script may proceed."""
     errors: list[str] = []
@@ -540,7 +602,10 @@ def validate(script: Script) -> list[str]:
                     "(con voz, ~10s permite una frase completa por slide)."
                 )
         errors.extend(_validate_carrusel_aida(script))
+        errors.extend(_validate_panoramas(script))
     else:
+        if script.panoramas:
+            errors.append("panoramas solo aplica a mode=carrusel.")
         # Generic duration bound applies ONLY to formula-less scripts. When a
         # formula is declared, ITS range governs (see validate_formula) and this
         # generic rule must NOT stack on top — otherwise a valid F1 (75-100s per

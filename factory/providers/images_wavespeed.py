@@ -37,12 +37,32 @@ API_PATHS: dict[str, str] = {
 # string. Sending "size" to them is rejected.
 ASPECT_RATIO_MODELS = {"nano-banana-2-fast", "nano-banana-pro"}
 
+# The API only accepts a FIXED enum of aspect_ratio strings — NOT an
+# arbitrary ratio computed from width/height. Verified 2026-07-18 (real 400
+# response): ["1:1","3:2","2:3","3:4","4:3","4:5","5:4","9:16", + 6 more].
+# gcd-reducing an arbitrary width/height pair can also land on a string
+# that's mathematically equivalent but not the literal accepted spelling —
+# "21:9" does NOT reduce to itself via gcd (21 and 9 share factor 3, gcd
+# lands on "7:3", which the API rejects) even though "21:9" itself IS a
+# valid enum value. So this list is hand-verified-valid literals, not
+# computed — pick from here, don't derive.
+VALID_ASPECT_RATIOS = {"1:1", "3:2", "2:3", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9", "21:9"}
+
 
 def _aspect_ratio(width: int, height: int) -> str:
     from math import gcd
 
     divisor = gcd(width, height)
-    return f"{width // divisor}:{height // divisor}"
+    ratio = f"{width // divisor}:{height // divisor}"
+    if ratio not in VALID_ASPECT_RATIOS:
+        raise ValueError(
+            f"width={width}, height={height} reduces to aspect_ratio \"{ratio}\", which "
+            f"WaveSpeed doesn't accept. Valid: {sorted(VALID_ASPECT_RATIOS)}. Pass an "
+            "explicit `aspect_ratio=` to WaveSpeedImages.generate() instead of relying on "
+            "this gcd derivation when you need a specific one (e.g. \"21:9\", which never "
+            "survives gcd reduction)."
+        )
+    return ratio
 
 
 class WaveSpeedImages:
@@ -73,7 +93,7 @@ class WaveSpeedImages:
             return json.loads(response.read())
 
     def generate(self, prompt: str, *, model: str, width: int, height: int,
-                 reference: str | None = None) -> bytes:
+                 reference: str | None = None, aspect_ratio: str | None = None) -> bytes:
         # model arrives as "wavespeed/z-image"; map the friendly slug to the
         # real API path (see API_PATHS above).
         friendly = model.split("/", 1)[1] if "/" in model else model
@@ -81,7 +101,16 @@ class WaveSpeedImages:
 
         payload: dict = {"prompt": prompt, "output_format": "png"}
         if friendly in ASPECT_RATIO_MODELS:
-            payload["aspect_ratio"] = _aspect_ratio(width, height)
+            # Explicit aspect_ratio wins — needed for values like "21:9" that
+            # don't survive gcd reduction from a pixel width/height (see
+            # VALID_ASPECT_RATIOS above). Falls back to deriving one from
+            # width/height for every existing caller that doesn't pass it.
+            if aspect_ratio is not None:
+                if aspect_ratio not in VALID_ASPECT_RATIOS:
+                    raise ValueError(f"aspect_ratio \"{aspect_ratio}\" not in {sorted(VALID_ASPECT_RATIOS)}.")
+                payload["aspect_ratio"] = aspect_ratio
+            else:
+                payload["aspect_ratio"] = _aspect_ratio(width, height)
             payload["resolution"] = "2k"
         else:
             payload["size"] = f"{width}*{height}"

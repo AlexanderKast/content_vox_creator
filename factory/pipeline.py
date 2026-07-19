@@ -13,11 +13,14 @@ and discovers the bill afterwards; that is the habit this file exists to break.
 
 from __future__ import annotations
 
+import io
 import json
 import shutil
 import threading
 from dataclasses import asdict
 from pathlib import Path
+
+from PIL import Image
 
 from . import align, cache, caption, chroma, config, cost, db, gating, hooks, redact, rhythm
 from .providers.character_magnific import MagnificCharacter
@@ -35,7 +38,7 @@ from .router import (
     build_prompt,
     plan,
 )
-from .script import DIMENSIONS, FPS, Mode, Script, assert_valid
+from .script import DIMENSIONS, FPS, Mode, PanoramaGroup, Script, assert_valid
 
 VOICE_MODEL = "elevenlabs/multilingual-v2"
 # Full-frame themed BACKDROP (the beat's `scene` field). A mid model: good enough
@@ -152,6 +155,13 @@ def estimate(script: Script, cfg: config.Config | None = None) -> cost.Estimate:
     if n_backdrops:
         est.add(f"backdrop ({BACKDROP_MODEL})", cost.image_price(BACKDROP_MODEL), n_backdrops)
 
+    # Panorama groups (2-4 beats sharing one wide backdrop, sliced per-beat —
+    # factory.script.PanoramaGroup): ONE backdrop-priced generation per
+    # group, never per beat it spans — that's the whole point of the
+    # feature. Slicing itself is free (local PIL crop, no API call).
+    if script.panoramas:
+        est.add(f"panorama ({BACKDROP_MODEL})", cost.image_price(BACKDROP_MODEL), len(script.panoramas))
+
     if script.character_count:
         est.add(
             f"voice ({VOICE_MODEL})",
@@ -218,6 +228,72 @@ class Factory:
             self.conn, key, job_id, "backdrop", BACKDROP_MODEL, str(path), cost.image_price(BACKDROP_MODEL)
         )
         return path
+
+    def _produce_panorama(
+        self, job_id: str, group: PanoramaGroup, width: int, height: int, template: str
+    ) -> dict[int, Path]:
+        """One wide backdrop (width * len(group.beats)) sliced into
+        len(group.beats) per-beat strips — a group of consecutive carrusel
+        slides that shares one continuous background instead of each paying
+        for (and getting) an independent one. Returns {beat_index: slice
+        Path}, or None if generation failed (degrades to no backdrop for
+        those beats, same as a failed _produce_backdrop).
+
+        The panorama itself is cached once (so a rebuild never re-pays for
+        it); each slice is ALSO cached under its own deterministic key (not
+        content-hashed from the crop bytes — from the group + index, same
+        style as every other cache key here) so re-slicing on a rebuild is
+        just a cheap local crop, never a re-fetch."""
+        prompt = backdrop_prompt(group.description, template)
+        n = len(group.beats)
+        # nano-banana-2-fast only accepts a FIXED enum of aspect ratios (see
+        # images_wavespeed.VALID_ASPECT_RATIOS) — width*n/height rarely lands
+        # on one, so pick the closest valid wide ratio explicitly instead of
+        # letting generate() derive (and reject) one. n is validated to 2-3
+        # (script._validate_panoramas) specifically because these are the
+        # two ratios that exist and fit reasonably.
+        aspect_ratio = {2: "16:9", 3: "21:9"}[n]
+        pano_key = cache.content_hash(
+            model=BACKDROP_MODEL, prompt=prompt, aspect_ratio=aspect_ratio, kind="panorama",
+        )
+        pano_path = cache.get(pano_key, "png")
+        if not pano_path:
+            provider = WaveSpeedImages(self.cfg.require("wavespeed_key"))
+            data = provider.generate(
+                prompt, model=BACKDROP_MODEL, width=width * n, height=height, aspect_ratio=aspect_ratio,
+            )
+            pano_path = cache.put(pano_key, "png", data)
+            db.record_asset(
+                self.conn, pano_key, job_id, "panorama", BACKDROP_MODEL,
+                str(pano_path), cost.image_price(BACKDROP_MODEL),
+            )
+
+        panorama: Image.Image | None = None  # lazy-loaded only if a slice is missing from cache
+
+        slices: dict[int, Path] = {}
+        for i, beat_index in enumerate(group.beats):
+            slice_key = cache.content_hash(
+                model=BACKDROP_MODEL, prompt=prompt, width=width, height=height,
+                kind="panorama-slice", beats=group.beats, slice_index=i,
+            )
+            slice_path = cache.get(slice_key, "png")
+            if slice_path is None:
+                if panorama is None:
+                    panorama = Image.open(pano_path).convert("RGB")
+                # The generated image rarely lands on the EXACT pixel width
+                # asked (aspect-ratio + fixed-resolution providers, see
+                # images_wavespeed.ASPECT_RATIO_MODELS) — slice by FRACTION
+                # of whatever width actually came back, not width * n.
+                actual_width, actual_height = panorama.size
+                slice_width = actual_width / n
+                left = round(i * slice_width)
+                right = round((i + 1) * slice_width)
+                crop = panorama.crop((left, 0, right, actual_height)).resize((width, height))
+                buf = io.BytesIO()
+                crop.save(buf, "PNG")
+                slice_path = cache.put(slice_key, "png", buf.getvalue())
+            slices[beat_index] = slice_path
+        return slices
 
     def _produce_image(self, job_id: str, asset: Asset, tier: Tier,
                        width: int, height: int, reference: str | None, template: str) -> Path:
@@ -461,10 +537,24 @@ class Factory:
                 if path:
                     produced[asset.id] = _publish_for_remotion(path)
 
+        # Panorama groups first (2-4 beats sharing one wide backdrop, sliced
+        # per-beat — factory.script.PanoramaGroup). validate() already
+        # guarantees a grouped beat's own `beat.scene` is empty, so the
+        # per-beat loop below naturally leaves these entries alone — no
+        # explicit skip needed. Degrade gracefully per group, same as a
+        # single backdrop failure: that group's beats fall back to no scene.
+        scene_by_beat: dict[int, str] = {}
+        for group in script.panoramas:
+            try:
+                slices = self._produce_panorama(job_id, group, width, height, template)
+                for beat_index, p in slices.items():
+                    scene_by_beat[beat_index] = _publish_for_remotion(p)
+            except Exception as exc:  # noqa: BLE001 - degrade, never block
+                print(f"Panorama generation failed for beats {list(group.beats)}, using paper bg: {exc}")
+
         # Full-frame themed backdrops, one per beat that declares one (beat.scene).
         # Degrade gracefully: a backdrop failure just falls back to the cream
         # paper Background for that beat, never blocks the build.
-        scene_by_beat: dict[int, str] = {}
         for beat in script.beats:
             if beat.scene.strip():
                 try:

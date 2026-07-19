@@ -22,7 +22,7 @@ from .formulas import Formula
 from .gating import GatingSpec
 from .pipeline import Factory
 from .router import Asset
-from .script import Beat, Mode, Script
+from .script import Beat, Mode, PanoramaGroup, Script
 
 
 def _all_brands() -> dict:
@@ -94,6 +94,11 @@ def load_script(path: Path) -> Script:
     brand = raw.get("brand") or _default_brand()
     profile = _brand_profile(brand)
 
+    panoramas = tuple(
+        PanoramaGroup(beats=tuple(p["beats"]), description=p["description"])
+        for p in raw.get("panoramas", [])
+    )
+
     return Script(
         mode=Mode(raw["mode"]),
         brand=brand,
@@ -121,6 +126,7 @@ def load_script(path: Path) -> Script:
         # happens in Factory.build, not here.
         template=raw.get("template") or profile.get("template"),
         chapters=raw.get("chapters", 1),
+        panoramas=panoramas,
     )
 
 

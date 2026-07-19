@@ -90,6 +90,26 @@ estas diferencias:
 - **Marcador de capítulo en pantalla**: el primer beat de cada capítulo lleva
   `"kicker": "CAPÍTULO 2 DE 3"` (campo `Beat.kicker`, ya existe — no hace
   falta código nuevo).
+- **`panoramas` (opcional, solo carrusel)**: 2-3 beats consecutivos pueden
+  compartir UN solo fondo panorámico ancho en vez de cada uno pagar su propio
+  backdrop — el fondo "continúa" de un slide al siguiente (efecto samusdesign,
+  pedido explícito de Alexander). Top-level:
+  ```json
+  "panoramas": [
+    { "beats": [2, 3], "description": "a wide shot of an empty congress hall, dramatic light, no visible text" }
+  ]
+  ```
+  - `beats`: 2 o 3 índices consecutivos ascendentes. Ninguno de esos beats
+    puede además declarar `scene` propio — `script.validate()` lo rechaza si
+    lo hace.
+  - `description`: mismas reglas que `scene` (inglés, sin texto visible).
+  - Costo: **una sola** generación de backdrop por grupo (no una por beat) —
+    `estimate` ya lo muestra así.
+  - Preferí grupos de 2 beats; 3 funciona pero con menos nitidez por franja
+    (el modelo de backdrop entrega resolución fija "2k" repartida entre más
+    ancho). No uses grupos de 4+ — no lo permite `validate()`.
+  - Usalo solo cuando el pedido menciona continuidad/panorámica entre slides
+    — no es el default, la mayoría de carruseles siguen con `scene` por beat.
 - **`narration` por beat, en carrusel también** (no solo en video). A
   diferencia de `content-vox-brief` (carrusel mudo por diseño), acá cada
   slide lleva su propia narración — el pipeline le genera una voz aparte por

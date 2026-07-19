@@ -129,6 +129,17 @@ Notas:
   o `validate()` rechaza el build.
 - `template` es opcional. Si no la ponés, se usa la de `brand.json` para esa
   marca; si esa tampoco tiene, cae a `engraving-orange`. Ver sección siguiente.
+- **`panoramas` (opcional, top-level)**: si el pedido menciona continuidad
+  entre slides (un fondo que "sigue" de un slide al siguiente, estilo
+  samusdesign), 2-3 beats consecutivos pueden compartir UN backdrop ancho
+  cortado en franjas en vez de cada uno con su `scene` propio:
+  ```json
+  "panoramas": [{ "beats": [2, 3], "description": "..." }]
+  ```
+  Esos beats NO llevan `scene` propio (`validate()` lo rechaza si lo hacen).
+  Cuesta lo mismo que UN backdrop, no uno por beat. No es el default — la
+  mayoría de carruseles siguen con `scene` independiente por slide. Ver
+  detalle completo en `content-vox-news/SKILL.md`.
 
 ## Plantilla visual (`template`)
 
