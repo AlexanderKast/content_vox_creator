@@ -49,6 +49,8 @@
     { "index": 8, "aida": "accion", "text": "¿Qué creés que pasa el 7 de agosto?",
       "subtitle": "Comentá abajo — leo todos.",
       "narration": "¿Vos qué creés que pasa el 7 de agosto? Comentá abajo.",
-      "seconds": 6 }
+      "seconds": 6,
+      "scene": "an open blank notebook with a fountain pen resting on it on a wooden desk, dramatic side lighting, no visible text",
+      "assets": [{ "id": "c8", "description": "a bold red speech-bubble stamp with a question mark inside, rough hand-stamped ink texture and dramatic drop shadow, editorial cutout" }] }
   ]
 }
