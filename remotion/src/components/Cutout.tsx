@@ -19,6 +19,14 @@ export const Cutout: React.FC<{
   delay?: number;
   x?: number;
   y?: number;
+  // Absolute frame-relative anchor for the cutout's own center (0-100, top
+  // of frame = 0). When set, this REPLACES the old "50% + y% of the
+  // cutout's own size" positioning — that self-relative math is what made
+  // every cutout placement this session (2026-07-18) a guess-and-re-render
+  // loop, because the same y meant a different absolute distance depending
+  // on the cutout's rendered size. topPercent means what it says regardless
+  // of scale. `y` still applies as a small ambient drift/float nudge either way.
+  topPercent?: number;
   scale?: number;
   rotate?: number;
   index?: number;
@@ -29,7 +37,10 @@ export const Cutout: React.FC<{
   // get it for more visible "life" (2026-07-18: "mas efectos a los objetos
   // que aparecen").
   isPublicFigure?: boolean;
-}> = ({ src, delay = 0, x = 0, y = 0, scale = 1, rotate = 0, index = 0, loopFrames, isPublicFigure = false }) => {
+}> = ({
+  src, delay = 0, x = 0, y = 0, topPercent, scale = 1, rotate = 0, index = 0,
+  loopFrames, isPublicFigure = false,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const local = frame - delay;
@@ -63,11 +74,11 @@ export const Cutout: React.FC<{
       style={{
         position: "absolute",
         left: "50%",
-        top: "50%",
+        top: `${topPercent ?? 50}%`,
         width: `${60 * scale}%`,
         transform: [
           `translate(-50%, -50%)`,
-          `translate(${x}%, ${y + drift / 10 + floatY / 10}%)`,
+          `translate(${x}%, ${(topPercent !== undefined ? 0 : y) + drift / 10 + floatY / 10}%)`,
           `scale(${entrance * pulse})`,
           `rotate(${rotate * entrance + sway}deg)`,
         ].join(" "),

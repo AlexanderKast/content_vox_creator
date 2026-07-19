@@ -1,7 +1,7 @@
 import React from "react";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 import type { BrandTokens } from "../types";
-import { TYPE, roles } from "../design";
+import { TYPE } from "../design";
 
 /**
  * "DESLIZA →" swipe affordance for carousel slides. Nudges horizontally to
@@ -14,7 +14,9 @@ import { TYPE, roles } from "../design";
 export const SwipeHint: React.FC<{ tokens: BrandTokens }> = ({ tokens }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const { accent } = roles(tokens);
+  // 2026-07-18: Alexander tried white first, then asked for black instead —
+  // final call is black, not the accent color.
+  const color = "#000000";
 
   const angle = (frame / Math.max(1, durationInFrames)) * Math.PI * 2;
   const nudge = Math.sin(angle * 3) * 10; // horizontal beckon
@@ -39,15 +41,15 @@ export const SwipeHint: React.FC<{ tokens: BrandTokens }> = ({ tokens }) => {
           fontWeight: TYPE.weight.bold,
           fontSize: 30,
           letterSpacing: "0.22em",
-          color: accent,
+          color,
         }}
       >
         DESLIZA
       </span>
       <svg width="58" height="40" viewBox="0 0 58 40" fill="none">
         {/* double chevron pointing right */}
-        <path d="M6 8 L22 20 L6 32" stroke={accent} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" />
-        <path d="M26 8 L42 20 L26 32" stroke={accent} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6 8 L22 20 L6 32" stroke={color} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" />
+        <path d="M26 8 L42 20 L26 32" stroke={color} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
   );

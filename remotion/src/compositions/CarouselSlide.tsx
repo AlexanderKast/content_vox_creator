@@ -57,7 +57,7 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
 
   const hasStat = !!beat.stat;
   const hasKicker = !!beat.kicker;
-  const { size: titleSize, titleTop, subtitleTop } = headerLayout(beat.text, hasKicker);
+  const { size: titleSize, titleTop, subtitleTop, cutoutTop } = headerLayout(beat.text, beat.subtitle, hasKicker);
   const legible = !!beat.scene;
 
   return (
@@ -79,12 +79,14 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         {/* Cutouts render on TOP of a scene backdrop too, not only when
             there's no scene — real Vox layout is background + layered
             cutout props together. Over a scene the cutout is a smaller
-            accent (70% scale), not the hero. y is POSITIVE now (header
-            layout, 2026-07-18): the header (kicker/title/subtitle) owns the
-            top of the frame, so the cutout lives in the lower half instead
-            of dodging it up top — a public figure never gets the size-0.56
-            hero slot or centered rotation-free treatment — smallest scale,
-            dead center, no rotation, regardless of index. */}
+            accent (70% scale), not the hero. topPercent is an ABSOLUTE
+            frame-relative anchor (Cutout.tsx) computed from cutoutTop —
+            where the header block (kicker/title/subtitle) actually ends,
+            not a guessed constant that only fit one subtitle length
+            (verified 2026-07-18: a 3-line subtitle nearly touched a cutout
+            placed for the 2-line case). A public figure never gets the
+            size-0.56 hero slot or centered rotation-free treatment —
+            smallest scale, dead center, no rotation, regardless of index. */}
         {beat.assets.map((asset, assetIndex) => {
           const compact = !!beat.scene;
           const baseScale = asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4;
@@ -93,7 +95,7 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
               key={asset.src}
               src={staticFile(asset.src)}
               delay={assetIndex * 3}
-              y={45}
+              topPercent={cutoutTop}
               scale={compact ? baseScale * 0.7 : baseScale}
               x={asset.isPublicFigure ? 0 : assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
               rotate={asset.isPublicFigure ? 0 : assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
@@ -162,7 +164,7 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         <SearchBar word={beat.search} tokens={tokens} bottom={12} loopFrames={durationInFrames} />
       </AbsoluteFill>
 
-      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} />
+      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} legibleOverPhoto={legible} />
       {/* Top band, left of SlideCounter — reference carousels put the
           account handle with the rest of the top chrome, not bottom-left
           (verified 2026-07-18, 7-image structural reference batch). */}

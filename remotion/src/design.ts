@@ -105,7 +105,7 @@ export const TYPE = {
   size: {
     hook: 120, // the opener — biggest
     headline: 104, // standard video beat text
-    slide: 78, // carrusel slide text, SHORT titles only — see fitTitleSize
+    slide: 106, // carrusel slide TITLE base — see fitTitleSize for the real per-length size
     counter: 40, // slide counter
   },
 } as const;
@@ -120,8 +120,24 @@ export const TYPE = {
 // short words wrap differently than one long compound word, but word count
 // tracks perceived length well enough for a scale bucket, not pixel-perfect
 // layout.
+// Weighted word count: a plain word-count bucket undercounts titles with
+// several long proper nouns — each one is ALSO individually emphasized
+// (KineticText.wordScale: >=8 chars -> bigger + bold) so it takes up more
+// than one "word" of line space. Verified 2026-07-18: "La posesión de
+// Abelardo de la Espriella ya tiene fecha." is 10 words by count (same
+// bucket as a title with no long words) but Posesión/Abelardo/Espriella are
+// all >=8 chars and all emphasized, so it rendered far bigger/wider than
+// the bucket assumed and collided with the graphic below it.
+function weightedWordCount(text: string): number {
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .reduce((sum, w) => sum + (w.replace(/[^\p{L}\p{N}]/gu, "").length >= 8 ? 1.6 : 1), 0);
+}
+
 export function fitTitleSize(text: string, base: number = TYPE.size.slide): number {
-  const words = text.trim().split(/\s+/).length;
+  const words = weightedWordCount(text);
   if (words <= 4) return base;
   if (words <= 7) return Math.round(base * 0.78);
   if (words <= 10) return Math.round(base * 0.62);
@@ -130,24 +146,42 @@ export function fitTitleSize(text: string, base: number = TYPE.size.slide): numb
 
 // Carrusel header stack (2026-07-18 — title moved from "hero over the image"
 // to "header above it"): kicker, title, subtitle all top-anchored now, in
-// that order. subtitleTop has to clear however many lines the title wraps
-// to — same word-count buckets as fitTitleSize (smaller font at higher word
-// counts still wraps to more lines, so the buckets track independently, not
-// proportionally). Single source of truth so CarouselSlide never hand-picks
-// a top offset that goes stale the next time a title gets longer.
-export function headerLayout(text: string, hasKicker: boolean): {
+// that order, and cutoutTop marks where the header block actually ends so a
+// object cutout below it (CarouselSlide, Cutout.tsx topPercent) lands with
+// consistent clearance instead of a hand-picked constant that only worked
+// for one subtitle length (verified 2026-07-18: a 3-line subtitle nearly
+// touched a cutout positioned for the 2-line case). subtitleTop/cutoutTop
+// have to clear however many lines the title/subtitle actually wrap to —
+// same word-count-bucket approach as fitTitleSize (smaller font at higher
+// word counts still wraps to more lines, so the buckets track
+// independently, not proportionally). Single source of truth so
+// CarouselSlide never hand-picks an offset that goes stale the next time a
+// title or subtitle gets longer.
+function estLines(text: string, wordsPerLine: number): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / wordsPerLine));
+}
+
+export function headerLayout(text: string, subtitle: string, hasKicker: boolean): {
   size: number;
   titleTop: number;
   subtitleTop: number;
+  cutoutTop: number;
 } {
-  const words = text.trim().split(/\s+/).length;
   const titleTop = hasKicker ? 20 : 13;
-  const estLines = words <= 4 ? 1 : words <= 10 ? 2 : 3;
-  return {
-    size: fitTitleSize(text),
-    titleTop,
-    subtitleTop: titleTop + estLines * 10 + 6,
-  };
+  // ~3.3 words/line at the fitted title size (TYPE.size.slide 106, bumped
+  // 2026-07-18 — fewer words fit per line than at the old 78 base, so this
+  // dropped from 4.5 with it), ~6 words/line for the smaller fixed-size
+  // subtitle — rough, but bucketed the same way fitTitleSize already is,
+  // not pixel-measured. 12%/line (was 10) — bigger font, taller lines.
+  // weightedWordCount (not a plain split) — same reasoning as fitTitleSize:
+  // several long/emphasized words need more line-clearance than their raw
+  // word count suggests.
+  const titleLines = Math.max(1, Math.ceil(weightedWordCount(text) / 3.3));
+  const subtitleTop = titleTop + titleLines * 12 + 6;
+  const subtitleLines = subtitle ? estLines(subtitle, 6) : 0;
+  const cutoutTop = subtitle ? subtitleTop + subtitleLines * 6 + 8 : subtitleTop + 4;
+  return { size: fitTitleSize(text), titleTop, subtitleTop, cutoutTop };
 }
 
 // ---------------------------------------------------------------------------

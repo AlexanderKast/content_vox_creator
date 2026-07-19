@@ -13,8 +13,12 @@ export const SlideCounter: React.FC<{
   index: number;
   total: number;
   tokens: BrandTokens;
-}> = ({ index, total, tokens }) => {
-  const { ink } = roles(tokens);
+  // See KineticText's prop of the same name — a dark brand ink at 0.65
+  // opacity nearly disappears against a busy photo backdrop (2026-07-18).
+  legibleOverPhoto?: boolean;
+}> = ({ index, total, tokens, legibleOverPhoto = false }) => {
+  const { ink: brandInk } = roles(tokens);
+  const ink = legibleOverPhoto ? "#FFFFFF" : brandInk;
   return (
     <div
       style={{
@@ -25,8 +29,11 @@ export const SlideCounter: React.FC<{
         fontWeight: TYPE.weight.medium,
         fontSize: TYPE.size.counter,
         color: ink,
-        opacity: 0.65,
+        opacity: legibleOverPhoto ? 0.95 : 0.65,
         letterSpacing: "0.05em",
+        textShadow: legibleOverPhoto ? "0 2px 6px rgba(0,0,0,0.85)" : "none",
+        WebkitTextStroke: legibleOverPhoto ? "1px #000000" : undefined,
+        paintOrder: legibleOverPhoto ? "stroke fill" : undefined,
       }}
     >
       {index}/{total}
