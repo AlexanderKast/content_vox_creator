@@ -109,6 +109,11 @@ export const BoxVideo: React.FC<{ manifest: Manifest }> = ({ manifest }) => {
                   stagger={beatIndex === 0 ? 1 : 2}
                   wordTimings={beatIndex === 0 ? null : beat.wordTimings}
                   sequenceFrom={beat.sequenceFrom}
+                  // Same treatment as the carrusel (2026-07-18): white fill +
+                  // black outline/shadow whenever this beat has a photo
+                  // backdrop, so a long caption that wraps down onto the
+                  // image never loses contrast.
+                  legibleOverPhoto={!!beat.scene}
                 />
                 <Underline tokens={tokens} delay={MOTION.frames.underline} />
               </BeatStage>
