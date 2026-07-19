@@ -2,6 +2,7 @@ import React from "react";
 import { Composition, getInputProps } from "remotion";
 import { BoxVideo } from "./compositions/BoxVideo";
 import { CarouselSlide } from "./compositions/CarouselSlide";
+import { LandscapeVideo } from "./compositions/LandscapeVideo";
 import { useDisplayFont } from "./fonts";
 import type { Manifest } from "./types";
 
@@ -86,6 +87,15 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1350}
         defaultProps={{ manifest, slideIndex }}
+      />
+      <Composition
+        id="LandscapeVideo"
+        component={LandscapeVideo}
+        durationInFrames={totalFrames}
+        fps={manifest.fps}
+        width={1920}
+        height={1080}
+        defaultProps={{ manifest }}
       />
     </>
   );

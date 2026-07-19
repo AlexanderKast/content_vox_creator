@@ -1,0 +1,128 @@
+{
+  "mode": "landscape",
+  "brand": "orgullosamente-paisa",
+  "topic": "La transformación épica de la Comuna 13 de Medellín — de zona de conflicto a destino turístico mundial",
+  "hook": "ESTO ERA LA COMUNA 13 HACE 20 AÑOS",
+  "cta": "¿Visitaste la Comuna 13? Comentá qué fue lo que más te marcó — leo todos.",
+  "music_prompt": "warm cinematic Latin acoustic guitar, subtle percussion, emotional and hopeful, building energy, no vocals, cinematic documentary feel",
+  "series_kicker": "ORGULLOSAMENTE PAISA",
+  "chapters": 3,
+  "beats": [
+    {
+      "index": 1,
+      "kicker": "CAPÍTULO 1 DE 3",
+      "text": "ESTO ERA LA COMUNA 13 HACE 20 AÑOS",
+      "narration": "Hace veinte años, la Comuna 13 de Medellín era una de las zonas más peligrosas del mundo. Milicia, paramilitares y fuerza pública se disputaban cada cuadra.",
+      "scene": "gritty urban hillside barrio in Medellín circa 2002, low concrete houses cascading down steep slope, overcast sky, muted desaturated colors, documentary style, cinematic wide shot",
+      "seconds": 9,
+      "assets": [
+        {
+          "id": "barrio-antiguo",
+          "description": "silhouette of a dense informal hillside neighborhood at dusk, concrete blocks, narrow alleyways, no people, editorial dramatic cutout"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "kicker": "CAPÍTULO 1 DE 3",
+      "text": "EN 2002, LA OPERACIÓN ORIÓN CAMBIÓ TODO",
+      "narration": "En octubre del 2002, la Operación Orión marcó un antes y un después. 1500 efectivos entraron a la comuna. Fue duro, fue polémico — pero fue el inicio de algo que nadie imaginó.",
+      "scene": "abstract representation of urban transformation, before and after split composition, dark left side transitioning to colorful right side, cinematic documentary",
+      "seconds": 10,
+      "assets": [
+        {
+          "id": "transformacion",
+          "description": "two hands shaking across a divide, one side dark concrete, one side colorful mural art, symbolic editorial cutout"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "kicker": "CAPÍTULO 2 DE 3",
+      "text": "LAS ESCALERAS ELÉCTRICAS: 386 METROS QUE LO CAMBIARON TODO",
+      "narration": "En 2011 llegaron las escaleras eléctricas. Trescientos ochenta y seis metros de movilidad urbana que conectaron a 12.000 habitantes con el resto de la ciudad. El viaje que antes duraba 35 minutos ahora toma 6.",
+      "scene": "vibrant colorful outdoor escalators in Medellín Comuna 13, surrounded by painted murals, people walking alongside, warm golden hour light, aerial perspective",
+      "seconds": 10,
+      "assets": [
+        {
+          "id": "escaleras",
+          "description": "outdoor escalator surrounded by colorful graffiti murals going up a hillside in Medellín, vibrant colors, editorial cutout"
+        },
+        {
+          "id": "tiempo",
+          "description": "clock showing 35 minutes crossed out with arrow pointing to 6 minutes, simple bold infographic cutout"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "kicker": "CAPÍTULO 2 DE 3",
+      "text": "EL GRAFFITI QUE CONVIRTIÓ EL DOLOR EN ARTE",
+      "narration": "Los muros que antes eran fronteras invisibles se convirtieron en galerías a cielo abierto. Hoy más de 200 murales cubren la comuna — cada uno cuenta una historia de resistencia, memoria y esperanza.",
+      "scene": "stunning large-scale colorful murals covering building walls in Medellín's Comuna 13, vibrant colors, people photographing the art, warm sunlight, wide angle",
+      "seconds": 9,
+      "assets": [
+        {
+          "id": "mural",
+          "description": "artist painting a large colorful mural on an urban wall with Medellín hillside behind, editorial cutout"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "kicker": "CAPÍTULO 2 DE 3",
+      "text": "3.5 MILLONES DE TURISTAS AL AÑO LO VISITAN HOY",
+      "narration": "Hoy la Comuna 13 recibe más de tres punto cinco millones de visitantes al año. Es el segundo destino turístico más visitado de Colombia, solo después de Cartagena.",
+      "scene": "aerial view of tourists walking colorful streets of Medellín's Comuna 13, sunny day, vibrant murals visible, crowded but festive atmosphere",
+      "seconds": 8,
+      "assets": [
+        {
+          "id": "turistas",
+          "description": "diverse crowd of tourists looking at colorful murals in a vibrant urban neighborhood, editorial cutout"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "kicker": "CAPÍTULO 3 DE 3",
+      "text": "EMPRENDEDORES QUE CONSTRUYERON FUTURO SOBRE SUS RAÍCES",
+      "narration": "Pero el verdadero motor de la transformación son sus propios habitantes. Jóvenes que convirtieron sus casas en hostales, sus esquinas en estudios de hip-hop, sus muros en negocios de turismo.",
+      "scene": "young Colombian entrepreneurs working in a colorful creative space with murals on walls in Medellín, vibrant workspace, community feel, warm tones",
+      "seconds": 9,
+      "assets": [
+        {
+          "id": "emprendedor",
+          "description": "young paisa entrepreneur smiling proudly in front of colorful mural art in their neighborhood, editorial cutout"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "kicker": "CAPÍTULO 3 DE 3",
+      "text": "DE ZONA ROJA A REFERENTE MUNDIAL DE URBANISMO SOCIAL",
+      "narration": "La ONU, el Banco Mundial y más de 40 países han estudiado el modelo de la Comuna 13. Medellín ganó el premio Lee Kuan Yew como la ciudad más innovadora del mundo. Eso lo hizo nuestra gente.",
+      "scene": "montage style wide shot of Medellín panorama from hillside with cable car visible, golden sunset light, modern city in distance, community in foreground, inspiring cinematic",
+      "seconds": 10,
+      "assets": [
+        {
+          "id": "ciudad",
+          "description": "panoramic view of Medellín city from a hillside neighborhood showing contrast between informal housing and modern skyline, editorial cutout"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "kicker": "ORGULLOSAMENTE PAISA",
+      "text": "ESTO ES LO QUE SIGNIFICA SER PAISA: CONVERTIR EL DOLOR EN ORGULLO",
+      "narration": "Porque ser paisa no es solo de dónde somos — es cómo respondemos. Y la Comuna 13 le demostró al mundo de lo que es capaz nuestra gente cuando se une. Eso no tiene precio.",
+      "scene": "vibrant overhead aerial shot of colorful rooftops and murals of Medellín's Comuna 13, golden afternoon light, community gathered, festive and hopeful atmosphere",
+      "seconds": 10,
+      "assets": [
+        {
+          "id": "orgullo",
+          "description": "Colombian flag waving proudly in front of colorful urban murals in Medellín, warm golden light, editorial cutout"
+        }
+      ]
+    }
+  ]
+}

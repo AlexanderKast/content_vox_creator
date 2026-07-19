@@ -26,13 +26,15 @@ from .timing import UNDERLINE_DELAY_FRAMES, asset_entrance_frame
 class Mode(str, Enum):
     VIDEO = "video"
     CARRUSEL = "carrusel"
+    LANDSCAPE = "landscape"
 
 
 # Format per mode. These are not preferences — 9:16 uploaded to a carousel gets
 # cropped to 3:4 by Instagram, which eats the frame.
 DIMENSIONS: dict[Mode, tuple[int, int]] = {
-    Mode.VIDEO: (1080, 1920),   # 9:16 — Reels, TikTok
-    Mode.CARRUSEL: (1080, 1350),  # 4:5 — Instagram feed
+    Mode.VIDEO: (1080, 1920),      # 9:16 — Reels, TikTok
+    Mode.CARRUSEL: (1080, 1350),   # 4:5 — Instagram feed
+    Mode.LANDSCAPE: (1920, 1080),  # 16:9 — YouTube, Facebook, stories horizontales
 }
 
 FPS = 30
@@ -586,6 +588,9 @@ def validate(script: Script) -> list[str]:
     if not script.hook.strip():
         errors.append("Missing hook. The first 3 seconds are the whole video.")
 
+    if script.mode is Mode.LANDSCAPE and script.panoramas:
+        errors.append("panoramas solo aplica a mode=carrusel.")
+
     if script.mode is Mode.CARRUSEL:
         if not 6 <= len(script.beats) <= 10:
             errors.append(
@@ -605,9 +610,7 @@ def validate(script: Script) -> list[str]:
                 )
         errors.extend(_validate_carrusel_aida(script))
         errors.extend(_validate_panoramas(script))
-    else:
-        if script.panoramas:
-            errors.append("panoramas solo aplica a mode=carrusel.")
+    elif script.mode in (Mode.VIDEO, Mode.LANDSCAPE):
         # Generic duration bound applies ONLY to formula-less scripts. When a
         # formula is declared, ITS range governs (see validate_formula) and this
         # generic rule must NOT stack on top — otherwise a valid F1 (75-100s per

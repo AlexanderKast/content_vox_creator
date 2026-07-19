@@ -66,7 +66,7 @@ export type Beat = {
 
 export type Manifest = {
   jobId: string;
-  mode: "video" | "carrusel";
+  mode: "video" | "carrusel" | "landscape";
   brand: string;
   tokens: BrandTokens;
   width: number;
