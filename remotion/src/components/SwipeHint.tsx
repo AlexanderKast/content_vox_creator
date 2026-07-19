@@ -14,9 +14,12 @@ import { TYPE } from "../design";
 export const SwipeHint: React.FC<{ tokens: BrandTokens }> = ({ tokens }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  // 2026-07-18: Alexander tried white first, then asked for black instead —
-  // final call is black, not the accent color.
-  const color = "#000000";
+  // White again (2026-07-18, full-bleed rewrite) — the earlier black call
+  // was made for the flat light-paper background that architecture had at
+  // the bottom of every slide. That background is gone: the bottom of the
+  // frame is now always inside SceneBackground's dark gradient band, where
+  // black text is invisible. White is the only choice that reads there.
+  const color = "#FFFFFF";
 
   const angle = (frame / Math.max(1, durationInFrames)) * Math.PI * 2;
   const nudge = Math.sin(angle * 3) * 10; // horizontal beckon

@@ -162,7 +162,9 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         <SearchBar word={beat.search} tokens={tokens} bottom={12} loopFrames={durationInFrames} />
       </AbsoluteFill>
 
-      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} />
+      {/* Always sits inside SceneBackground's top dark-gradient band now —
+          legible-white is unconditional, same reasoning as the title. */}
+      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} legibleOverPhoto />
       {/* Top band, left of SlideCounter — reference carousels put the
           account handle with the rest of the top chrome, not bottom-left
           (verified 2026-07-18, 7-image structural reference batch). */}
