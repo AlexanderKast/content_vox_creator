@@ -81,23 +81,30 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         {/* Cutouts float over the clear middle band of the image (roughly
             28%-50%, where SceneBackground's gradient stays fully clear) —
             no topPercent means Cutout's own default (dead center, 50%).
-            Over a scene the cutout is a smaller accent (70% scale), not the
-            hero, and gets overScene's heavier floating shadow + accent halo
-            so it visibly separates from the photo instead of reading as
-            printed on it; without a scene it's the hero, bigger, on the
-            flat dark surface fill, with the lighter plain shadow. A public
-            figure never gets the size-0.56 hero slot or centered
-            rotation-free treatment — smallest scale, dead center, no
-            rotation, regardless of index. */}
+            Over a scene the cutout is a slightly smaller accent (85% scale),
+            not the hero, and gets overScene's heavier floating shadow +
+            accent halo so it visibly separates from the photo instead of
+            reading as printed on it; without a scene it's the hero, bigger,
+            on the flat dark surface fill, with the lighter plain shadow. A
+            public figure still never rotates or leaves dead-center (keeps
+            it dignified/legible), but is no longer scaled down as "distant"
+            — full unredacted face, person-only cutout (background removed),
+            same size class as any other cutout (2026-07-18, explicit
+            request). */}
         {beat.assets.map((asset, assetIndex) => {
           const compact = !!beat.scene;
-          const baseScale = asset.isPublicFigure ? 0.32 : assetIndex === 0 ? 0.56 : 0.4;
+          // Bumped 2026-07-18 ("quiero las imagenes super puestas mas
+          // grandes") — public figure went from 0.32 to 0.55 too: now that
+          // the face is shown in full (redact_eyes=False, explicit
+          // request), there's no "stay small/distant" reason left to hold
+          // it back the way the eye-bar treatment used to justify.
+          const baseScale = asset.isPublicFigure ? 0.55 : assetIndex === 0 ? 0.75 : 0.55;
           return (
             <Cutout
               key={asset.src}
               src={staticFile(asset.src)}
               delay={assetIndex * 3}
-              scale={compact ? baseScale * 0.7 : baseScale}
+              scale={compact ? baseScale * 0.85 : baseScale}
               x={asset.isPublicFigure ? 0 : assetIndex === 0 ? 0 : assetIndex % 2 === 1 ? 24 : -24}
               rotate={asset.isPublicFigure ? 0 : assetIndex === 0 ? -2 : assetIndex % 2 === 1 ? 6 : -7}
               index={assetIndex}

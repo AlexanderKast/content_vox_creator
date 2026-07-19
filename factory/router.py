@@ -121,10 +121,12 @@ CUTOUT_PROMPTS: dict[str, str] = {
         "no shadow on background, centered"
     ),
     "vox-paper": (
-        "{description}, black-and-white halftone cutout in a documentary-collage explainer "
-        "style, rough white paper keyline around the silhouette, offset Hot Red (#B62E1F) "
-        "accent stroke behind it, print grain and halftone dot texture, no color in the "
-        "subject itself, no gradients, no glossy 3D, no photorealistic color, "
+        "{description}, highly detailed intricate illustration, sharp crisp linework, "
+        "black-and-white halftone cutout in a documentary-collage explainer style, "
+        "rich fine cross-hatching and stippling for depth and texture, rough white paper "
+        "keyline around the silhouette, offset Hot Red (#B62E1F) accent stroke behind it, "
+        "print grain and halftone dot texture, no color in the subject itself, no "
+        "gradients, no glossy 3D, no photorealistic color, no blurry or low-detail areas, "
         "isolated on pure green screen background #00FF00, no shadow on background, centered"
     ),
 }
