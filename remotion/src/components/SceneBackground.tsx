@@ -2,16 +2,22 @@ import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import type { BrandTokens } from "../types";
 import { Background } from "./Background";
-import { hexToRgba, roles } from "../design";
+import { roles } from "../design";
 
 /**
- * The beat's "world": a full-frame themed scene illustration (bakery, map,
- * stadium) behind the content. Falls back to the cream paper Background when
- * the beat has no scene.
+ * The beat's "world": a full-bleed photo/illustration, edge to edge, no
+ * margins (2026-07-18: replaced the header-over-image layout — a top paper
+ * band pushing the photo down read as a template, not a full-frame image.
+ * The 7 reference carousels Alexander approved — samusdesign, CT Escola,
+ * Rarison, ST Fitness, Guardian, Mirza — all share one architecture: image
+ * is the whole frame, text sits on top of it, a dark gradient (added by the
+ * caller, see the sibling overlay in CarouselSlide) makes that legible.
  *
- * A slow push-in keeps it alive, and a soft cream scrim over the lower third
- * guarantees the title + subtitle stay legible no matter what the scene shows.
- * `seamless` (carrusel) makes the push-in periodic so the loop wrap is clean.
+ * Falls back to the flat brand-surface color when the beat has no scene —
+ * never a light paper box, a real full-bleed fill either way.
+ *
+ * A slow push-in keeps it alive. `seamless` (carrusel) makes the push-in
+ * periodic so the loop wrap is clean.
  */
 export const SceneBackground: React.FC<{
   tokens: BrandTokens;
@@ -39,15 +45,6 @@ export const SceneBackground: React.FC<{
           height: "100%",
           objectFit: "cover",
           transform: `scale(${zoom})`,
-        }}
-      />
-      {/* Cream scrim over the lower third so text stays readable over any art. */}
-      <AbsoluteFill
-        style={{
-          background: `linear-gradient(to bottom, ${hexToRgba(surface, 0)} 40%, ${hexToRgba(
-            surface,
-            0.78
-          )} 82%, ${hexToRgba(surface, 0.9)} 100%)`,
         }}
       />
     </AbsoluteFill>

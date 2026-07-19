@@ -57,7 +57,9 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
 
   const hasStat = !!beat.stat;
   const hasKicker = !!beat.kicker;
-  const { size: titleSize, titleTop, subtitleTop, cutoutTop } = headerLayout(beat.text, beat.subtitle, hasKicker);
+  const { size: titleSize, titleTop, photoTop, subtitleTop, cutoutTop } = headerLayout(
+    beat.text, beat.subtitle, hasKicker
+  );
   const legible = !!beat.scene;
 
   return (
@@ -145,7 +147,6 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
             size={titleSize}
             top={titleTop}
             loopFrames={durationInFrames}
-            legibleOverPhoto={legible}
           />
         )}
 
@@ -164,7 +165,10 @@ export const CarouselSlide: React.FC<{ manifest: Manifest; slideIndex: number }>
         <SearchBar word={beat.search} tokens={tokens} bottom={12} loopFrames={durationInFrames} />
       </AbsoluteFill>
 
-      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} legibleOverPhoto={legible} />
+      {/* Always sits in the paper zone reserved above subtitleTop (110px is
+          well within it — see SceneBackground's topOffset), never over the
+          photo, so it never needs the legibleOverPhoto treatment. */}
+      <SlideCounter index={slideIndex + 1} total={beats.length} tokens={tokens} />
       {/* Top band, left of SlideCounter — reference carousels put the
           account handle with the rest of the top chrome, not bottom-left
           (verified 2026-07-18, 7-image structural reference batch). */}
