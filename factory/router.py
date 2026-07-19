@@ -180,31 +180,31 @@ BACKDROP_PROMPTS: dict[str, str] = {
         "{description}. Full-frame vertical 9:16 illustrated scene, vintage engraving and "
         "woodcut style on a WARM CREAM paper background, black ink line work with warm "
         "orange-red (#E8451F) accents, fine halftone shading, retro editorial newspaper "
-        "poster aesthetic. Leave the lower third calm and visually quiet — a caption is "
-        "composited on top afterward, outside this image. Pure imagery, no typography."
+        "poster aesthetic, filling the entire frame edge to edge with no blank margins. "
+        "Pure imagery, no typography."
     ),
     "dark-luxury-gold": (
         "{description}. Full-frame vertical 9:16 illustrated scene, vintage engraving "
         "and woodcut style on an ELEGANT DARK near-black background, luminous GOLD and "
         "warm amber line work and highlights, fine halftone shading, subtle green accents, "
         "ornate gold decorative border framing the edges, premium dark AI-luxury poster "
-        "aesthetic. Leave the lower third calm and visually quiet — a caption is composited "
-        "on top afterward, outside this image. Pure imagery, no typography."
+        "aesthetic, filling the entire frame edge to edge with no blank margins. Pure "
+        "imagery, no typography."
     ),
     "minimal-flat": (
         "{description}. Full-frame vertical 9:16 illustrated scene, minimal flat vector "
         "illustration, clean geometric shapes, thick outlines, two-tone limited palette, "
         "generous negative space, no gradients, no texture, modern editorial poster "
-        "aesthetic. Leave the lower third calm and visually quiet — a caption is composited "
-        "on top afterward, outside this image. Pure imagery, no typography."
+        "aesthetic, filling the entire frame edge to edge with no blank margins. Pure "
+        "imagery, no typography."
     ),
     "vox-paper": (
         "{description}. Full-frame vertical 9:16 'the stage' — a muted archival tan "
         "(#C9BB9C) map/paper-texture field, evenly toned, pre-lit, print grain and subtle "
         "halftone dot texture, matte finish, no gloss, no lens flares, desaturated "
         "documentary-collage explainer aesthetic with at most one Hot Red (#B62E1F) accent "
-        "stroke or underline. Leave the lower third calm and visually quiet — a caption is "
-        "composited on top afterward, outside this image. Pure imagery, no typography."
+        "stroke or underline, filling the entire frame edge to edge with no blank margins. "
+        "Pure imagery, no typography."
     ),
 }
 
